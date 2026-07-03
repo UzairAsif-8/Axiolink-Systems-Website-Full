@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 /** Verify certificate via backend API */
 export async function verifyCertificate(code) {
@@ -8,7 +8,7 @@ export async function verifyCertificate(code) {
   }
 
   const response = await fetch(
-    `${API_BASE}/api/certificate/verify/${encodeURIComponent(trimmed)}`
+    apiUrl(`certificate/verify/${encodeURIComponent(trimmed)}`)
   );
   const result = await response.json();
 

@@ -1,9 +1,8 @@
 import { sendContactEmail, isEmailJsConfigured } from "../services/emailjsContact.service";
-
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 async function saveContactToBackend(data) {
-  const response = await fetch(`${API_BASE}/api/contact`, {
+  const response = await fetch(apiUrl("contact"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -34,7 +33,7 @@ export async function submitContact(data) {
 }
 
 export async function subscribeNewsletter(email) {
-  const response = await fetch(`${API_BASE}/api/newsletter/subscribe`, {
+  const response = await fetch(apiUrl("newsletter/subscribe"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),

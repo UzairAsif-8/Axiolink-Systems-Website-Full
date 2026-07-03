@@ -1,7 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 export async function submitEnrollment(data) {
-  const response = await fetch(`${API_BASE}/api/courses/enroll`, {
+  const response = await fetch(apiUrl("courses/enroll"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

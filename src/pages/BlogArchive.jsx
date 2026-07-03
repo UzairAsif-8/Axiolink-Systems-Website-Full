@@ -8,7 +8,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import BlogBreadcrumbs from "../components/blog/BlogBreadcrumbs";
 import { stockImages } from "../data/stockImages";
-import { fetchPublicBlogs } from "../api/public";
+import { fetchPublicBlogs, apiUrl } from "../api/public";
 import { usePageMeta } from "../hooks/usePageMeta";
 import {
   BLOG_CATEGORIES,
@@ -341,7 +341,7 @@ const BlogArchive = ({ filterType = null }) => {
             <Button className="bg-white text-primary-600 hover:bg-primary-50">Subscribe</Button>
           </div>
           <p className="text-sm text-primary-200 mt-3">
-            RSS: <a href="/api/blogs/feed/rss.xml" className="underline">Subscribe via RSS</a>
+            RSS: <a href={apiUrl("blogs/feed/rss.xml")} className="underline">Subscribe via RSS</a>
           </p>
         </div>
       </section>

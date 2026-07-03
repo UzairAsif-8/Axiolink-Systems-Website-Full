@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 async function parseJson(res) {
   const json = await res.json();
@@ -7,28 +7,30 @@ async function parseJson(res) {
 }
 
 export async function fetchPublicCourses() {
-  const res = await fetch(`${API_BASE}/api/courses`);
+  const res = await fetch(apiUrl("courses"));
   return parseJson(res);
 }
 
 export async function fetchPublicCourseBySlug(slug) {
-  const res = await fetch(`${API_BASE}/api/courses/${slug}`);
+  const res = await fetch(apiUrl(`courses/${slug}`));
   return parseJson(res);
 }
 
 export async function fetchPublicBlogs(params = {}) {
   const qs = new URLSearchParams(params).toString();
-  const url = qs ? `${API_BASE}/api/blogs?${qs}` : `${API_BASE}/api/blogs`;
+  const url = qs ? `${apiUrl("blogs")}?${qs}` : apiUrl("blogs");
   const res = await fetch(url);
   return parseJson(res);
 }
 
 export async function fetchPublicBlogBySlug(slug) {
-  const res = await fetch(`${API_BASE}/api/blogs/${slug}`);
+  const res = await fetch(apiUrl(`blogs/${slug}`));
   return parseJson(res);
 }
 
 export async function fetchPublicSettings() {
-  const res = await fetch(`${API_BASE}/api/settings`);
+  const res = await fetch(apiUrl("settings"));
   return parseJson(res);
 }
+
+export { apiUrl } from "./config.js";

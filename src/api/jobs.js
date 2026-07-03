@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 function unwrap(json) {
   if (json?.success && json.data !== undefined) return json.data;
@@ -7,7 +7,7 @@ function unwrap(json) {
 
 /** GET /api/jobs */
 export async function fetchJobs() {
-  const response = await fetch(`${API_BASE}/api/jobs`);
+  const response = await fetch(apiUrl("jobs"));
   if (!response.ok) throw new Error("Failed to fetch jobs");
   const json = await response.json();
   return { data: unwrap(json) };
@@ -21,7 +21,7 @@ export function getOpenJobs(apiResult) {
 
 /** GET /api/jobs/:slug */
 export async function fetchJobBySlug(slug) {
-  const response = await fetch(`${API_BASE}/api/jobs/${encodeURIComponent(slug)}`);
+  const response = await fetch(apiUrl(`jobs/${encodeURIComponent(slug)}`));
   if (!response.ok) throw new Error("Job not found");
   const json = await response.json();
   return { data: unwrap(json) };
@@ -57,7 +57,7 @@ export function buildJobApplicationPayload(data, resumeFile) {
 
 /** POST /api/job/apply */
 export async function submitJobApplication({ formData }) {
-  const response = await fetch(`${API_BASE}/api/job/apply`, {
+  const response = await fetch(apiUrl("job/apply"), {
     method: "POST",
     body: formData,
   });

@@ -1,9 +1,8 @@
 import axios from "axios";
-
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { API_ROOT, apiUrl } from "../../api/config.js";
 
 export const api = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: API_ROOT,
   withCredentials: true,
 });
 
@@ -17,13 +16,15 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    const isAuthRoute = original?.url?.includes("/auth/login") || original?.url?.includes("/auth/refresh");
+    const isAuthRoute =
+      original?.url?.includes("/auth/login") ||
+      original?.url?.includes("/auth/refresh");
     if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
       original._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {
         try {
-          const { data } = await axios.post(`${API_BASE}/api/auth/refresh`, {
+          const { data } = await axios.post(apiUrl("auth/refresh"), {
             refreshToken,
           });
           localStorage.setItem("accessToken", data.data.accessToken);

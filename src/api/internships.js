@@ -1,15 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import { apiUrl } from "./config.js";
 
 function unwrap(json) {
   if (json?.success && json.data !== undefined) return json.data;
   return json;
 }
 
-/**
- * GET /api/internships
- */
+/** GET /api/internships */
 export async function fetchInternships() {
-  const response = await fetch(`${API_BASE}/api/internships`);
+  const response = await fetch(apiUrl("internships"));
   if (!response.ok) throw new Error("Failed to fetch internships");
   const json = await response.json();
   return { data: unwrap(json) };
@@ -21,21 +19,14 @@ export function getOpenInternships(apiResult) {
   return Array.isArray(list) ? list : [];
 }
 
-/**
- * GET /api/internships/:slug
- */
+/** GET /api/internships/:slug */
 export async function fetchInternshipBySlug(slug) {
-  const response = await fetch(
-    `${API_BASE}/api/internships/${encodeURIComponent(slug)}`
-  );
+  const response = await fetch(apiUrl(`internships/${encodeURIComponent(slug)}`));
   if (!response.ok) throw new Error("Internship not found");
   const json = await response.json();
   return { data: unwrap(json) };
 }
 
-/**
- * Builds application payload for multipart submit
- */
 export function buildApplicationPayload(data, resumeFile) {
   const payload = {
     fullName: data.fullName,
@@ -65,11 +56,9 @@ export function buildApplicationPayload(data, resumeFile) {
   return { payload, formData };
 }
 
-/**
- * POST /api/internship/apply
- */
+/** POST /api/internship/apply */
 export async function submitInternshipApplication({ formData }) {
-  const response = await fetch(`${API_BASE}/api/internship/apply`, {
+  const response = await fetch(apiUrl("internship/apply"), {
     method: "POST",
     body: formData,
   });
