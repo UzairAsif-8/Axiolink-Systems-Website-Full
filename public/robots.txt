@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://axiolinksystems.com/api/blogs/meta/sitemap.xml
+
+# Blog RSS
+# https://axiolinksystems.com/api/blogs/feed/rss.xml
+
+Disallow: /admin/

@@ -1,0 +1,805 @@
+// Axiolink Systems — Production PostgreSQL schema (Neon)
+// Setup: set DATABASE_URL in .env → npx prisma migrate deploy → npm run seed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  HR
+  COURSE_MANAGER
+  CONTENT_MANAGER
+  VIEWER
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum ApplicationStatus {
+  NEW
+  UNDER_REVIEW
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  SELECTED
+  INTERNSHIP_STARTED
+  INTERNSHIP_COMPLETED
+  CERTIFICATE_ISSUED
+  WITHDRAWN
+  REJECTED
+}
+
+enum EnrollmentStatus {
+  NEW
+  ACTIVE
+  COMPLETED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIAL
+  REFUNDED
+  WAIVED
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum InternStatus {
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  WITHDRAWN
+}
+
+enum DocumentType {
+  CONTRACT
+  ID_PROOF
+  RESUME
+  CERTIFICATE
+  OFFER_LETTER
+  NDA
+  INTERNSHIP_LETTER
+  EXPERIENCE_LETTER
+  OTHER
+}
+
+// ─── Auth (DB users only — Super Admin is env-based, not stored here) ────────
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  password     String
+  name         String
+  role         UserRole  @default(VIEWER)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  applicationNotes         ApplicationNote[]
+  applicationStatusChanges ApplicationStatusHistory[] @relation("ApplicationStatusChangedBy")
+  enrollmentStatusChanges  EnrollmentStatusHistory[]  @relation("EnrollmentStatusChangedBy")
+  applicationsUpdated      Application[]            @relation("ApplicationUpdatedBy")
+  enrollmentsUpdated       Enrollment[]             @relation("EnrollmentUpdatedBy")
+  employeeDocumentsUploaded EmployeeDocument[]      @relation("DocumentUploadedBy")
+  certificatesIssued       Certificate[]            @relation("CertificateIssuedBy")
+  auditLogs                AuditLog[]
+  notifications            Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@index([deletedAt])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  token     String    @unique
+  userId    String    @db.Uuid
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── RBAC ────────────────────────────────────────────────────────────────────
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  description String?
+  module      String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  id           String   @id @default(uuid()) @db.Uuid
+  role         UserRole
+  permissionId String   @db.Uuid
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+  @@index([role])
+}
+
+// ─── Organization ────────────────────────────────────────────────────────────
+
+model Employee {
+  id                String         @id @default(uuid()) @db.Uuid
+  employeeCode      String         @unique
+  fullName          String
+  email             String         @unique
+  phone             String?
+  cnic              String?
+  address           String?        @db.Text
+  emergencyContact  String?
+  emergencyPhone    String?
+  jobTitle          String?
+  designation       String?
+  department        String?
+  photoUrl          String?
+  photoPublicId     String?
+  status            EmployeeStatus @default(ACTIVE)
+  hireDate          DateTime?
+  trainingDate      DateTime?
+  probationEndDate  DateTime?
+  leavingDate       DateTime?
+  salary            Decimal?       @db.Decimal(12, 2)
+  notes             String?        @db.Text
+  deletedAt         DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  documents  EmployeeDocument[]
+
+  @@index([status])
+  @@index([deletedAt])
+  @@index([email])
+  @@index([cnic])
+}
+
+model EmployeeDocument {
+  id           String       @id @default(uuid()) @db.Uuid
+  employeeId   String       @db.Uuid
+  title        String
+  fileName     String?
+  documentType DocumentType @default(OTHER)
+  fileUrl      String
+  publicId     String?
+  fileSize     Int?
+  mimeType     String?
+  uploadedById String?      @db.Uuid
+  deletedAt    DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  uploadedBy User?    @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([employeeId])
+  @@index([documentType])
+  @@index([uploadedById])
+}
+
+// ─── Recruitment ─────────────────────────────────────────────────────────────
+
+model Internship {
+  id               String        @id @default(uuid()) @db.Uuid
+  title            String
+  slug             String        @unique
+  department       String
+  description      String        @db.Text
+  responsibilities String[]      @default([])
+  requirements     String[]      @default([])
+  benefits         String[]      @default([])
+  duration         String?
+  location         String?
+  workingHours     String?
+  joiningDate      String?
+  type             String        @default("Internship")
+  workMode         WorkMode      @default(REMOTE)
+  paid             Boolean       @default(true)
+  stipend          String?
+  deadline         DateTime?
+  positions        Int           @default(1)
+  technologies     String[]      @default([])
+  skillLevel       String?
+  whatYouLearn     String[]      @default([])
+  whoCanApply      String[]      @default([])
+  imageUrl         String?
+  imagePublicId    String?
+  status           ContentStatus @default(DRAFT)
+  featured         Boolean       @default(false)
+  applicationsOpen Boolean       @default(true)
+  seoTitle         String?
+  seoDescription   String?
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  applications Application[]
+  interns      Intern[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([deletedAt])
+}
+
+model Job {
+  id               String        @id @default(uuid()) @db.Uuid
+  title            String
+  slug             String        @unique
+  department       String
+  description      String        @db.Text
+  responsibilities String[]      @default([])
+  requirements     String[]      @default([])
+  benefits         String[]      @default([])
+  location         String?
+  type             String        @default("Full-time")
+  workMode         WorkMode      @default(HYBRID)
+  salaryRange      String?
+  deadline         DateTime?
+  positions        Int           @default(1)
+  status           ContentStatus @default(DRAFT)
+  featured         Boolean       @default(false)
+  applicationsOpen Boolean       @default(true)
+  seoTitle         String?
+  seoDescription   String?
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  applications Application[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([deletedAt])
+}
+
+model Application {
+  id                 String            @id @default(uuid()) @db.Uuid
+  applicationType    String            @default("internship")
+  status             ApplicationStatus @default(NEW)
+  fullName           String
+  email              String
+  phone              String
+  currentCity        String?
+  linkedin           String?
+  githubPortfolio    String?
+  internshipId       String?           @db.Uuid
+  jobId              String?           @db.Uuid
+  internshipTitle    String?
+  university         String?
+  degree             String?
+  semester           String?
+  graduationYear     String?
+  skills             String[]          @default([])
+  whyJoin            String?           @db.Text
+  proudProject       String?           @db.Text
+  portfolioWebsite   String?
+  availableStartDate DateTime?
+  resumeUrl              String?
+  resumePublicId         String?
+  payload                Json?
+  activeInternAt         DateTime?
+  internshipStartedAt    DateTime?
+  internshipCompletedAt  DateTime?
+  withdrawnAt            DateTime?
+  certificateIssued      Boolean           @default(false)
+  certificateIssuedAt    DateTime?
+  certificateId          String?           @unique @db.Uuid
+  currentStage           String?
+  remarks                String?           @db.Text
+  updatedById            String?           @db.Uuid
+  deletedAt              DateTime?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  internship        Internship?                 @relation(fields: [internshipId], references: [id], onDelete: SetNull)
+  job               Job?                        @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  notes             ApplicationNote[]
+  statusHistory     ApplicationStatusHistory[]
+  certificateRecord Certificate?              @relation("ApplicationCertificate", fields: [certificateId], references: [id], onDelete: SetNull)
+  updatedBy         User?                       @relation("ApplicationUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  intern            Intern?
+
+  @@index([status])
+  @@index([certificateIssued])
+  @@index([updatedById])
+  @@index([email])
+  @@index([createdAt])
+  @@index([internshipId])
+  @@index([jobId])
+  @@index([deletedAt])
+}
+
+model ApplicationNote {
+  id            String   @id @default(uuid()) @db.Uuid
+  applicationId String   @db.Uuid
+  authorId      String?  @db.Uuid
+  content       String   @db.Text
+  createdAt     DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  author      User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
+}
+
+model ApplicationStatusHistory {
+  id            String             @id @default(uuid()) @db.Uuid
+  applicationId String             @db.Uuid
+  fromStatus    ApplicationStatus?
+  toStatus      ApplicationStatus
+  changedById   String?            @db.Uuid
+  changedByName String?
+  remarks       String?            @db.Text
+  createdAt     DateTime           @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changedBy   User?       @relation("ApplicationStatusChangedBy", fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
+  @@index([createdAt])
+}
+
+model Intern {
+  id            String       @id @default(uuid()) @db.Uuid
+  applicationId String?      @unique @db.Uuid
+  internshipId  String       @db.Uuid
+  fullName      String
+  email         String
+  phone         String?
+  startDate     DateTime?
+  endDate       DateTime?
+  status        InternStatus @default(ACTIVE)
+  notes         String?      @db.Text
+  deletedAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  internship  Internship   @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+
+  @@index([internshipId])
+  @@index([status])
+  @@index([email])
+  @@index([deletedAt])
+}
+
+// ─── Education ───────────────────────────────────────────────────────────────
+
+model Instructor {
+  id           String        @id @default(uuid()) @db.Uuid
+  fullName     String
+  email        String        @unique
+  bio          String?       @db.Text
+  photoUrl     String?
+  photoPublicId String?
+  linkedin     String?
+  status       ContentStatus @default(PUBLISHED)
+  deletedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  courses Course[]
+
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model Course {
+  id                  String        @id @default(uuid()) @db.Uuid
+  title               String
+  slug                String        @unique
+  description         String        @db.Text
+  category            String?
+  instructorId        String?       @db.Uuid
+  duration            String?
+  level               String?
+  price               Decimal?      @db.Decimal(10, 2)
+  discount            Decimal?      @db.Decimal(5, 2)
+  thumbnailUrl        String?
+  thumbnailPublicId   String?
+  bannerUrl           String?
+  bannerPublicId      String?
+  learningOutcomes    String[]      @default([])
+  curriculum          Json?
+  requirements        String[]      @default([])
+  faqs                Json?
+  certificateAvailable Boolean      @default(true)
+  enrollmentOpen      Boolean       @default(true)
+  status              ContentStatus @default(DRAFT)
+  seoTitle            String?
+  seoDescription      String?
+  deletedAt           DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  instructor   Instructor?  @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  enrollments  Enrollment[]
+  certificates Certificate[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([instructorId])
+  @@index([deletedAt])
+}
+
+model Student {
+  id            String    @id @default(uuid()) @db.Uuid
+  fullName      String
+  email         String    @unique
+  phone         String?
+  photoUrl      String?
+  photoPublicId String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  enrollments  Enrollment[]
+  certificates Certificate[]
+
+  @@index([email])
+  @@index([deletedAt])
+}
+
+model Enrollment {
+  id                  String           @id @default(uuid()) @db.Uuid
+  studentId           String?          @db.Uuid
+  fullName            String
+  email               String
+  phone               String?
+  courseId            String           @db.Uuid
+  status              EnrollmentStatus @default(NEW)
+  enrollmentDate      DateTime         @default(now())
+  startedAt           DateTime?
+  completedAt         DateTime?
+  withdrawnAt         DateTime?
+  paymentStatus       PaymentStatus    @default(PENDING)
+  attendance          Int              @default(0)
+  progress            Int              @default(0)
+  progressPercentage  Int              @default(0)
+  attendancePercentage Int             @default(0)
+  certificateIssued   Boolean          @default(false)
+  certificateIssuedAt DateTime?
+  remarks             String?          @db.Text
+  notes               String?          @db.Text
+  updatedById         String?          @db.Uuid
+  deletedAt           DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  student       Student?                  @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  course        Course                    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  certificates  Certificate[]
+  statusHistory EnrollmentStatusHistory[]
+  updatedBy     User?                     @relation("EnrollmentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([courseId])
+  @@index([studentId])
+  @@index([status])
+  @@index([deletedAt])
+  @@index([updatedById])
+}
+
+model EnrollmentStatusHistory {
+  id           String            @id @default(uuid()) @db.Uuid
+  enrollmentId String            @db.Uuid
+  fromStatus   EnrollmentStatus?
+  toStatus     EnrollmentStatus
+  changedById  String?           @db.Uuid
+  changedByName String?
+  remarks      String?           @db.Text
+  createdAt    DateTime          @default(now())
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  changedBy  User?      @relation("EnrollmentStatusChangedBy", fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([enrollmentId])
+  @@index([createdAt])
+}
+
+model Certificate {
+  id               String    @id @default(uuid()) @db.Uuid
+  certificateCode  String    @unique
+  certificateNumber String?  @unique
+  studentName      String
+  courseName       String
+  studentId        String?   @db.Uuid
+  courseId         String?   @db.Uuid
+  enrollmentId     String?   @db.Uuid
+  issueDate        DateTime  @default(now())
+  expiryDate       DateTime?
+  issuedById       String?   @db.Uuid
+  templateVersion  String?   @default("v1")
+  verificationUrl  String?
+  pdfUrl           String?
+  pdfPublicId      String?
+  qrCode           String?
+  isValid          Boolean   @default(true)
+  revokedAt        DateTime?
+  revokedReason    String?
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  student     Student?     @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  course      Course?      @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  enrollment  Enrollment?  @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
+  application Application? @relation("ApplicationCertificate")
+  issuedBy    User?        @relation("CertificateIssuedBy", fields: [issuedById], references: [id], onDelete: SetNull)
+
+  @@index([certificateCode])
+  @@index([certificateNumber])
+  @@index([isValid])
+  @@index([studentId])
+  @@index([deletedAt])
+  @@index([issuedById])
+}
+
+// ─── Content & Website ───────────────────────────────────────────────────────
+
+model TeamMember {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String
+  role         String
+  department   String?
+  bio          String?       @db.Text
+  photoUrl     String?
+  photoPublicId String?
+  linkedin     String?
+  github       String?
+  email        String?
+  displayOrder Int           @default(0)
+  featured     Boolean       @default(false)
+  status       ContentStatus @default(PUBLISHED)
+  deletedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+  @@index([displayOrder])
+  @@index([deletedAt])
+}
+
+model Testimonial {
+  id          String        @id @default(uuid()) @db.Uuid
+  clientName  String
+  company     String?
+  designation String?
+  photoUrl    String?
+  photoPublicId String?
+  rating      Int           @default(5)
+  review      String        @db.Text
+  status      ContentStatus @default(DRAFT)
+  deletedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model ContactMessage {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  subject   String?
+  message   String        @db.Text
+  status    MessageStatus @default(NEW)
+  reply     String?       @db.Text
+  deletedAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model NewsletterSubscriber {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  isActive     Boolean   @default(true)
+  subscribedAt DateTime  @default(now())
+  deletedAt    DateTime?
+
+  @@index([email])
+  @@index([isActive])
+}
+
+model BlogPost {
+  id              String        @id @default(uuid()) @db.Uuid
+  title           String
+  slug            String        @unique
+  excerpt         String?       @db.Text
+  content         String        @db.Text
+  featuredImage   String?
+  featuredImagePublicId String?
+  category        String?
+  tags            String[]      @default([])
+  author          String?
+  status          ContentStatus @default(DRAFT)
+  publishedAt     DateTime?
+  seoTitle        String?
+  seoDescription  String?
+  deletedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+  @@index([slug])
+  @@index([publishedAt])
+  @@index([deletedAt])
+}
+
+model Event {
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String        @unique
+  description String        @db.Text
+  bannerUrl   String?
+  bannerPublicId String?
+  location    String?
+  speakers    Json?
+  schedule    Json?
+  startDate   DateTime
+  endDate     DateTime?
+  status      ContentStatus @default(DRAFT)
+  deletedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  registrations EventRegistration[]
+
+  @@index([status])
+  @@index([startDate])
+  @@index([deletedAt])
+}
+
+model EventRegistration {
+  id        String   @id @default(uuid()) @db.Uuid
+  eventId   String   @db.Uuid
+  fullName  String
+  email     String
+  phone     String?
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([email])
+}
+
+model GalleryAlbum {
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String        @unique
+  description String?
+  status      ContentStatus @default(PUBLISHED)
+  deletedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  images GalleryImage[]
+
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model GalleryImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  albumId   String   @db.Uuid
+  title     String?
+  url       String
+  publicId  String?
+  alt       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  album GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId])
+}
+
+model SiteSetting {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ─── System ──────────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  type      String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  userEmail String?
+  action    String
+  entity    String
+  entityId  String?  @db.Uuid
+  module    String?
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([module])
+  @@index([createdAt])
+  @@index([userId])
+}

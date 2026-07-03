@@ -1,0 +1,1517 @@
+{
+  "dashboard": {
+    "stats": {
+      "totalInternships": 12,
+      "openInternships": 11,
+      "openJobs": 0,
+      "totalApplications": 100,
+      "newApplications": 14,
+      "totalCourses": 10,
+      "totalEnrollments": 120,
+      "totalCertificates": 60,
+      "unreadMessages": 14,
+      "totalBlogs": 9,
+      "totalEvents": 1,
+      "teamMembers": 6,
+      "applicationsThisMonth": 18
+    },
+    "recentApplications": [
+      {
+        "id": "a1000001-0000-4000-8000-000000000001",
+        "fullName": "Ahmed Khan",
+        "email": "ahmed.khan0@email.com",
+        "status": "NEW",
+        "internshipTitle": "Frontend Development Internship",
+        "createdAt": "2026-06-27T10:00:00.000Z"
+      },
+      {
+        "id": "a1000001-0000-4000-8000-000000000002",
+        "fullName": "Fatima Ali",
+        "email": "fatima.ali1@email.com",
+        "status": "UNDER_REVIEW",
+        "internshipTitle": "AI Engineering Internship",
+        "createdAt": "2026-06-26T11:30:00.000Z"
+      },
+      {
+        "id": "a1000001-0000-4000-8000-000000000003",
+        "fullName": "Hassan Raza",
+        "email": "hassan.raza2@email.com",
+        "status": "SHORTLISTED",
+        "internshipTitle": "Backend Development Internship",
+        "createdAt": "2026-06-25T09:15:00.000Z"
+      },
+      {
+        "id": "a1000001-0000-4000-8000-000000000004",
+        "fullName": "Sana Malik",
+        "email": "sana.malik3@email.com",
+        "status": "INTERVIEW_SCHEDULED",
+        "internshipTitle": "UI/UX Design Internship",
+        "createdAt": "2026-06-24T14:00:00.000Z"
+      },
+      {
+        "id": "a1000001-0000-4000-8000-000000000005",
+        "fullName": "Usman Ali",
+        "email": "usman.ali4@email.com",
+        "status": "SELECTED",
+        "internshipTitle": "Cybersecurity Internship",
+        "createdAt": "2026-06-23T16:45:00.000Z"
+      }
+    ],
+    "recentEnrollments": [
+      {
+        "id": "e1000001-0000-4000-8000-000000000001",
+        "fullName": "Fatima Ali Khan",
+        "email": "fatima.ali.khan0@student.axiolink.com",
+        "progress": 85,
+        "course": {
+          "title": "AI Foundations"
+        },
+        "createdAt": "2026-06-20T10:00:00.000Z"
+      },
+      {
+        "id": "e1000001-0000-4000-8000-000000000002",
+        "fullName": "Ahmed Khan Hussain",
+        "email": "ahmed.khan.hussain1@student.axiolink.com",
+        "progress": 72,
+        "course": {
+          "title": "Web Development Bootcamp"
+        },
+        "createdAt": "2026-06-18T10:00:00.000Z"
+      },
+      {
+        "id": "e1000001-0000-4000-8000-000000000003",
+        "fullName": "Zain Malik Ahmed",
+        "email": "zain.malik.ahmed2@student.axiolink.com",
+        "progress": 91,
+        "course": {
+          "title": "Python Programming"
+        },
+        "createdAt": "2026-06-15T10:00:00.000Z"
+      }
+    ],
+    "recentMessages": [
+      {
+        "id": "m1000001-0000-4000-8000-000000000001",
+        "name": "Ahmed Khan",
+        "email": "ahmed.khan0@inquiry.com",
+        "subject": "Internship inquiry",
+        "status": "NEW",
+        "createdAt": "2026-06-27T08:00:00.000Z"
+      },
+      {
+        "id": "m1000001-0000-4000-8000-000000000002",
+        "name": "Fatima Ali",
+        "email": "fatima.ali1@inquiry.com",
+        "subject": "Buland Parwaz enrollment question",
+        "status": "NEW",
+        "createdAt": "2026-06-26T09:30:00.000Z"
+      },
+      {
+        "id": "m1000001-0000-4000-8000-000000000003",
+        "name": "Usman Ali",
+        "email": "usman.ali2@inquiry.com",
+        "subject": "Partnership opportunity",
+        "status": "READ",
+        "createdAt": "2026-06-25T11:00:00.000Z"
+      }
+    ],
+    "notifications": [
+      {
+        "id": "n1000001-0000-4000-8000-000000000001",
+        "type": "application",
+        "title": "New Internship Application",
+        "message": "Ahmed Khan applied for Frontend Development Internship",
+        "link": "/admin/applications",
+        "isRead": false,
+        "createdAt": "2026-06-27T10:00:00.000Z"
+      },
+      {
+        "id": "n1000001-0000-4000-8000-000000000002",
+        "type": "enrollment",
+        "title": "New Student Enrollment",
+        "message": "Fatima Ali enrolled in AI Foundations",
+        "link": "/admin/students",
+        "isRead": false,
+        "createdAt": "2026-06-26T14:00:00.000Z"
+      },
+      {
+        "id": "n1000001-0000-4000-8000-000000000003",
+        "type": "message",
+        "title": "Contact Message Received",
+        "message": "New inquiry: Partnership opportunity",
+        "link": "/admin/messages",
+        "isRead": true,
+        "createdAt": "2026-06-25T09:00:00.000Z"
+      }
+    ]
+  },
+  "internships": [
+    {
+      "id": "i1000001-0000-4000-8000-000000000001",
+      "title": "Frontend Development Internship",
+      "slug": "frontend-development",
+      "department": "Frontend",
+      "departmentId": "d1000001-0000-4000-8000-000000000003",
+      "description": "Build modern React applications with mentorship from senior engineers.",
+      "responsibilities": [
+        "Develop UI components",
+        "Participate in code reviews",
+        "Document your work"
+      ],
+      "requirements": [
+        "React fundamentals",
+        "HTML/CSS/JS",
+        "Git basics"
+      ],
+      "benefits": [
+        "Monthly stipend",
+        "Certificate",
+        "Mentorship"
+      ],
+      "duration": "3 months",
+      "type": "Internship",
+      "workMode": "REMOTE",
+      "paid": true,
+      "stipend": "PKR 30,000",
+      "positions": 3,
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "skillLevel": "Intermediate",
+      "status": "PUBLISHED",
+      "featured": true,
+      "applicationsOpen": true,
+      "imageUrl": "https://picsum.photos/seed/axiolink-frontend-intern/1200/600",
+      "createdAt": "2026-02-10T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000002",
+      "title": "Backend Development Internship",
+      "slug": "backend-development",
+      "department": "Backend",
+      "departmentId": "d1000001-0000-4000-8000-000000000004",
+      "description": "Work on APIs, databases, and server-side systems.",
+      "responsibilities": [
+        "Build REST APIs",
+        "Write tests",
+        "Deploy services"
+      ],
+      "requirements": [
+        "Node.js",
+        "SQL",
+        "Problem solving"
+      ],
+      "benefits": [
+        "Stipend",
+        "Mentorship",
+        "Full-time offer potential"
+      ],
+      "duration": "3 months",
+      "type": "Internship",
+      "workMode": "HYBRID",
+      "paid": true,
+      "stipend": "PKR 35,000",
+      "positions": 2,
+      "technologies": [
+        "Node.js",
+        "PostgreSQL",
+        "Prisma"
+      ],
+      "skillLevel": "Intermediate",
+      "status": "PUBLISHED",
+      "featured": true,
+      "applicationsOpen": true,
+      "imageUrl": "https://picsum.photos/seed/axiolink-backend-intern/1200/600",
+      "createdAt": "2026-02-12T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000003",
+      "title": "Full Stack Development Internship",
+      "slug": "full-stack-development",
+      "department": "Backend",
+      "description": "End-to-end product development internship.",
+      "responsibilities": [
+        "Full stack features",
+        "Agile ceremonies"
+      ],
+      "requirements": [
+        "React and Node.js"
+      ],
+      "benefits": [
+        "Stipend",
+        "Certificate"
+      ],
+      "duration": "3 months",
+      "workMode": "HYBRID",
+      "paid": true,
+      "stipend": "PKR 32,000",
+      "positions": 2,
+      "technologies": [
+        "React",
+        "Node.js"
+      ],
+      "status": "PUBLISHED",
+      "featured": false,
+      "applicationsOpen": true,
+      "createdAt": "2026-02-14T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000004",
+      "title": "AI Engineering Internship",
+      "slug": "ai-engineering",
+      "department": "AI",
+      "description": "Applied AI and ML engineering internship.",
+      "responsibilities": [
+        "Train models",
+        "Evaluate results"
+      ],
+      "requirements": [
+        "Python",
+        "ML basics"
+      ],
+      "benefits": [
+        "Stipend",
+        "Research exposure"
+      ],
+      "duration": "3 months",
+      "workMode": "REMOTE",
+      "paid": true,
+      "stipend": "PKR 40,000",
+      "positions": 2,
+      "technologies": [
+        "Python",
+        "TensorFlow"
+      ],
+      "status": "PUBLISHED",
+      "featured": true,
+      "applicationsOpen": true,
+      "createdAt": "2026-02-16T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000005",
+      "title": "Machine Learning Internship",
+      "slug": "machine-learning",
+      "department": "AI",
+      "description": "Machine learning research and implementation.",
+      "responsibilities": [
+        "Data prep",
+        "Model training"
+      ],
+      "requirements": [
+        "Python",
+        "Statistics"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "REMOTE",
+      "paid": true,
+      "positions": 2,
+      "technologies": [
+        "Python",
+        "Scikit-learn"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-02-18T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000006",
+      "title": "Cybersecurity Internship",
+      "slug": "cybersecurity",
+      "department": "Cybersecurity",
+      "description": "Security operations and penetration testing basics.",
+      "responsibilities": [
+        "Security audits",
+        "Incident response drills"
+      ],
+      "requirements": [
+        "Networking basics"
+      ],
+      "benefits": [
+        "Stipend",
+        "Cert prep support"
+      ],
+      "duration": "3 months",
+      "workMode": "ONSITE",
+      "paid": true,
+      "positions": 2,
+      "technologies": [
+        "SIEM",
+        "Linux"
+      ],
+      "status": "PUBLISHED",
+      "featured": true,
+      "applicationsOpen": true,
+      "createdAt": "2026-02-20T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000007",
+      "title": "UI/UX Design Internship",
+      "slug": "ui-ux-design",
+      "department": "UI/UX",
+      "description": "Product design internship with Figma and user research.",
+      "responsibilities": [
+        "Wireframes",
+        "Prototypes"
+      ],
+      "requirements": [
+        "Figma"
+      ],
+      "benefits": [
+        "Stipend",
+        "Portfolio review"
+      ],
+      "duration": "3 months",
+      "workMode": "REMOTE",
+      "paid": true,
+      "positions": 2,
+      "technologies": [
+        "Figma"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-02-22T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000008",
+      "title": "Digital Marketing Internship",
+      "slug": "digital-marketing",
+      "department": "Marketing",
+      "description": "SEO, ads, and content marketing internship.",
+      "responsibilities": [
+        "Campaigns",
+        "Analytics reports"
+      ],
+      "requirements": [
+        "Marketing interest"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "HYBRID",
+      "paid": true,
+      "positions": 2,
+      "technologies": [
+        "SEO",
+        "Google Ads"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-02-24T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000009",
+      "title": "Content Writing Internship",
+      "slug": "content-writing",
+      "department": "Marketing",
+      "description": "Blog, copy, and technical writing internship.",
+      "responsibilities": [
+        "Blog posts",
+        "Social copy"
+      ],
+      "requirements": [
+        "Strong English writing"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "REMOTE",
+      "paid": true,
+      "positions": 1,
+      "technologies": [
+        "SEO",
+        "Copywriting"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-02-26T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000010",
+      "title": "Business Development Internship",
+      "slug": "business-development",
+      "department": "Sales",
+      "description": "Sales and partnerships internship.",
+      "responsibilities": [
+        "Lead research",
+        "Client outreach"
+      ],
+      "requirements": [
+        "Communication skills"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "HYBRID",
+      "paid": true,
+      "positions": 2,
+      "technologies": [
+        "CRM"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-02-28T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000011",
+      "title": "Graphic Design Internship",
+      "slug": "graphic-design",
+      "department": "UI/UX",
+      "description": "Brand and visual design internship.",
+      "responsibilities": [
+        "Social assets",
+        "Brand kits"
+      ],
+      "requirements": [
+        "Adobe tools"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "REMOTE",
+      "paid": true,
+      "positions": 1,
+      "technologies": [
+        "Illustrator",
+        "Photoshop"
+      ],
+      "status": "PUBLISHED",
+      "applicationsOpen": true,
+      "createdAt": "2026-03-02T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "i1000001-0000-4000-8000-000000000012",
+      "title": "Game Development Internship",
+      "slug": "game-development",
+      "department": "Frontend",
+      "description": "Unity and game design internship.",
+      "responsibilities": [
+        "Gameplay scripts",
+        "Level design support"
+      ],
+      "requirements": [
+        "C# basics"
+      ],
+      "benefits": [
+        "Stipend"
+      ],
+      "duration": "3 months",
+      "workMode": "HYBRID",
+      "paid": true,
+      "positions": 1,
+      "technologies": [
+        "Unity",
+        "C#"
+      ],
+      "status": "DRAFT",
+      "featured": false,
+      "applicationsOpen": false,
+      "createdAt": "2026-03-04T00:00:00.000Z",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    }
+  ],
+  "applications": [
+    {
+      "id": "a1000001-0000-4000-8000-000000000001",
+      "fullName": "Ahmed Khan",
+      "email": "ahmed.khan0@email.com",
+      "phone": "+92 320 1234567",
+      "status": "NEW",
+      "internshipId": "i1000001-0000-4000-8000-000000000001",
+      "internshipTitle": "Frontend Development Internship",
+      "university": "LUMS",
+      "degree": "BS Computer Science",
+      "skills": [
+        "JavaScript",
+        "React",
+        "CSS"
+      ],
+      "whyJoin": "I want hands-on frontend experience at Axiolink.",
+      "resumeUrl": "https://placehold.co/800x1100/1e40af/ffffff?text=Ahmed+Khan+Resume",
+      "linkedin": "https://linkedin.com/in/ahmed-khan",
+      "githubPortfolio": "https://github.com/ahmed-khan",
+      "createdAt": "2026-06-27T10:00:00.000Z",
+      "notes": [
+        {
+          "id": "747010ac-080a-480c-9238-7507979bbe81",
+          "content": "Strong candidate",
+          "authorName": "Super Admin",
+          "createdAt": "2026-06-28T15:20:30.081Z"
+        }
+      ],
+      "statusHistory": [
+        {
+          "id": "81f1f26c-6694-438c-80cc-4af74653a522",
+          "fromStatus": "UNDER_REVIEW",
+          "toStatus": "NEW",
+          "changedBy": "Super Admin",
+          "note": "Status changed to NEW",
+          "changedAt": "2026-06-28T15:38:52.851Z"
+        },
+        {
+          "id": "d2542354-388a-437c-b083-c4e77a88552e",
+          "fromStatus": "NEW",
+          "toStatus": "UNDER_REVIEW",
+          "changedBy": "Super Admin",
+          "note": "Review started",
+          "changedAt": "2026-06-28T15:20:30.068Z"
+        },
+        {
+          "id": "e11057db-b251-43d3-8f7a-1a0573c74b30",
+          "fromStatus": null,
+          "toStatus": "NEW",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-27T10:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000002",
+      "fullName": "Fatima Ali",
+      "email": "fatima.ali1@email.com",
+      "phone": "+92 321 2345678",
+      "status": "UNDER_REVIEW",
+      "internshipId": "i1000001-0000-4000-8000-000000000004",
+      "internshipTitle": "AI Engineering Internship",
+      "university": "NUST",
+      "degree": "BS AI",
+      "skills": [
+        "Python",
+        "TensorFlow"
+      ],
+      "whyJoin": "Passionate about applied AI.",
+      "resumeUrl": "https://placehold.co/800x1100/1e40af/ffffff?text=Fatima+Ali+Resume",
+      "createdAt": "2026-06-26T11:30:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "d89366c8-bfd5-456a-97da-c80e9a04f200",
+          "fromStatus": null,
+          "toStatus": "UNDER_REVIEW",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-26T11:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000003",
+      "fullName": "Hassan Raza",
+      "email": "hassan.raza2@email.com",
+      "phone": "+92 322 3456789",
+      "status": "SELECTED",
+      "internshipId": "i1000001-0000-4000-8000-000000000002",
+      "internshipTitle": "Backend Development Internship",
+      "university": "FAST-NUCES",
+      "degree": "BS Software Engineering",
+      "skills": [
+        "Node.js",
+        "PostgreSQL"
+      ],
+      "resumeUrl": "https://placehold.co/800x1100/1e40af/ffffff?text=Hassan+Raza+Resume",
+      "createdAt": "2026-06-25T09:15:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "f4148026-4108-4dec-9f29-22746d2df09f",
+          "fromStatus": "SHORTLISTED",
+          "toStatus": "SELECTED",
+          "changedBy": "Super Admin",
+          "note": "Approved and added to active interns",
+          "changedAt": "2026-06-28T15:52:40.254Z"
+        },
+        {
+          "id": "7aa9132e-4c1a-4697-a309-2a63fa8a9c2e",
+          "fromStatus": null,
+          "toStatus": "SHORTLISTED",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-25T09:15:00.000Z"
+        }
+      ],
+      "activeInternAt": "2026-06-28T15:52:40.254Z",
+      "certificateIssued": false
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000004",
+      "fullName": "Sana Malik",
+      "email": "sana.malik3@email.com",
+      "phone": "+92 323 4567890",
+      "status": "INTERNSHIP_COMPLETED",
+      "internshipId": "i1000001-0000-4000-8000-000000000007",
+      "internshipTitle": "UI/UX Design Internship",
+      "university": "COMSATS",
+      "degree": "BS Design",
+      "skills": [
+        "Figma",
+        "UI Design"
+      ],
+      "resumeUrl": "https://placehold.co/800x1100/1e40af/ffffff?text=Sana+Malik+Resume",
+      "createdAt": "2026-06-24T14:00:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "85ae2872-328f-4ca8-b889-ef08de6da4fb",
+          "fromStatus": "SELECTED",
+          "toStatus": "INTERNSHIP_COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Internship completed",
+          "changedAt": "2026-06-28T15:52:47.124Z"
+        },
+        {
+          "id": "0ae3e627-fdcb-4113-95d9-ea36cea178ae",
+          "fromStatus": "INTERVIEW_SCHEDULED",
+          "toStatus": "SELECTED",
+          "changedBy": "Super Admin",
+          "note": "Approved and added to active interns",
+          "changedAt": "2026-06-28T15:46:35.775Z"
+        },
+        {
+          "id": "df81f04c-16d6-423a-b711-2ed5b26fc65f",
+          "fromStatus": null,
+          "toStatus": "INTERVIEW_SCHEDULED",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-24T14:00:00.000Z"
+        }
+      ],
+      "activeInternAt": "2026-06-28T15:46:35.775Z",
+      "certificateIssued": false,
+      "completedAt": "2026-06-28T15:52:47.124Z"
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000005",
+      "fullName": "Usman Ali",
+      "email": "usman.ali4@email.com",
+      "phone": "+92 324 5678901",
+      "status": "INTERNSHIP_COMPLETED",
+      "internshipId": "i1000001-0000-4000-8000-000000000006",
+      "internshipTitle": "Cybersecurity Internship",
+      "university": "UET Lahore",
+      "degree": "BS Cyber Security",
+      "activeInternAt": "2026-06-01T09:00:00.000Z",
+      "certificateIssued": true,
+      "skills": [
+        "Linux",
+        "Networking"
+      ],
+      "resumeUrl": "https://placehold.co/800x1100/1e40af/ffffff?text=Usman+Ali+Resume",
+      "createdAt": "2026-06-23T16:45:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "e3b8b8b9-10df-4ae0-8dae-edb87fe2181b",
+          "fromStatus": "INTERNSHIP_COMPLETED",
+          "toStatus": "INTERNSHIP_COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Certificate issued",
+          "changedAt": "2026-06-28T15:49:21.122Z"
+        },
+        {
+          "id": "6870d632-edac-406c-bdd3-309a50ea40d6",
+          "fromStatus": "SELECTED",
+          "toStatus": "INTERNSHIP_COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Status changed to INTERNSHIP COMPLETED",
+          "changedAt": "2026-06-28T15:46:41.535Z"
+        },
+        {
+          "id": "189e7314-edca-4397-a9aa-4a5840a9a7eb",
+          "fromStatus": null,
+          "toStatus": "SELECTED",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-23T16:45:00.000Z"
+        }
+      ],
+      "completedAt": "2026-06-28T15:46:41.535Z",
+      "certificateIssuedAt": "2026-06-28T15:49:21.122Z"
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000007",
+      "fullName": "Bilal Ahmed",
+      "email": "bilal.ahmed6@email.com",
+      "phone": "+92 326 7890123",
+      "status": "NEW",
+      "internshipId": "i1000001-0000-4000-8000-000000000003",
+      "internshipTitle": "Full Stack Development Internship",
+      "university": "GIKI",
+      "degree": "BS CS",
+      "skills": [
+        "React",
+        "Node.js"
+      ],
+      "createdAt": "2026-06-21T12:00:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "6996c065-fdde-4394-a4a0-bc7e8bd21d0d",
+          "fromStatus": null,
+          "toStatus": "NEW",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-21T12:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000008",
+      "fullName": "Maryam Raza",
+      "email": "maryam.raza7@email.com",
+      "phone": "+92 327 8901234",
+      "status": "UNDER_REVIEW",
+      "internshipId": "i1000001-0000-4000-8000-000000000008",
+      "internshipTitle": "Digital Marketing Internship",
+      "university": "IBA Karachi",
+      "degree": "BBA",
+      "skills": [
+        "SEO",
+        "Content"
+      ],
+      "createdAt": "2026-06-20T15:30:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "bcff0af3-68c6-4c45-a3cb-def0d32b9486",
+          "fromStatus": null,
+          "toStatus": "UNDER_REVIEW",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-20T15:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000009",
+      "fullName": "Omar Farooq",
+      "email": "omar.farooq8@email.com",
+      "phone": "+92 328 9012345",
+      "status": "INTERNSHIP_COMPLETED",
+      "internshipId": "i1000001-0000-4000-8000-000000000005",
+      "internshipTitle": "Machine Learning Internship",
+      "university": "Air University",
+      "degree": "BS Data Science",
+      "completedAt": "2026-05-15T10:00:00.000Z",
+      "certificateIssued": true,
+      "skills": [
+        "Python",
+        "ML"
+      ],
+      "createdAt": "2026-06-19T09:00:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "f1eb5e2c-a5b3-4dd7-8efe-e2d1ec83fc42",
+          "fromStatus": "INTERNSHIP_COMPLETED",
+          "toStatus": "INTERNSHIP_COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Certificate issued",
+          "changedAt": "2026-06-28T15:49:19.989Z"
+        },
+        {
+          "id": "fa2944f4-a95d-4228-a371-adca2508e44c",
+          "fromStatus": null,
+          "toStatus": "NEW",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-19T09:00:00.000Z"
+        }
+      ],
+      "certificateIssuedAt": "2026-06-28T15:49:19.989Z"
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000010",
+      "fullName": "Hira Ahmed",
+      "email": "hira.ahmed9@email.com",
+      "phone": "+92 329 0123456",
+      "status": "INTERNSHIP_COMPLETED",
+      "internshipId": "i1000001-0000-4000-8000-000000000009",
+      "internshipTitle": "Content Writing Internship",
+      "university": "NED University",
+      "degree": "BS English",
+      "completedAt": "2026-04-20T10:00:00.000Z",
+      "certificateIssued": true,
+      "certificateIssuedAt": "2026-04-25T14:00:00.000Z",
+      "skills": [
+        "Writing",
+        "SEO"
+      ],
+      "createdAt": "2026-06-18T11:00:00.000Z",
+      "notes": [],
+      "statusHistory": [
+        {
+          "id": "b7cf5c19-1310-41ab-86f1-05b26eaf0cf0",
+          "fromStatus": null,
+          "toStatus": "SHORTLISTED",
+          "changedBy": "System",
+          "note": "Application submitted",
+          "changedAt": "2026-06-18T11:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "id": "c1000001-0000-4000-8000-000000000002",
+      "title": "Python Programming",
+      "slug": "python-programming",
+      "description": "Python from basics to applied scripting.",
+      "category": "Development",
+      "duration": "8 weeks",
+      "level": "Beginner",
+      "price": 12000,
+      "thumbnailUrl": "https://picsum.photos/seed/axiolink-python-thumb/640/360",
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-01-20T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000003",
+      "title": "Cybersecurity Fundamentals",
+      "slug": "cybersecurity-fundamentals",
+      "description": "Security essentials for modern developers.",
+      "category": "Security",
+      "duration": "10 weeks",
+      "level": "Intermediate",
+      "price": 18000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-01-25T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000004",
+      "title": "Freelancing Masterclass",
+      "slug": "freelancing-masterclass",
+      "description": "Launch and grow a freelancing career.",
+      "category": "Career",
+      "duration": "6 weeks",
+      "level": "All Levels",
+      "price": 8000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-01T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000005",
+      "title": "AI Foundations",
+      "slug": "ai-foundations",
+      "description": "Intro to AI and machine learning workflows.",
+      "category": "AI & Data",
+      "duration": "10 weeks",
+      "level": "Intermediate",
+      "price": 20000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-05T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000006",
+      "title": "UI/UX Design",
+      "slug": "ui-ux-design",
+      "description": "Design thinking and Figma for product teams.",
+      "category": "Design",
+      "duration": "8 weeks",
+      "level": "Beginner",
+      "price": 14000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-10T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000007",
+      "title": "Graphic Design",
+      "slug": "graphic-design",
+      "description": "Visual design fundamentals and branding.",
+      "category": "Design",
+      "duration": "6 weeks",
+      "level": "Beginner",
+      "price": 10000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000008",
+      "title": "Leadership & Communication",
+      "slug": "leadership-communication",
+      "description": "Soft skills for professional growth.",
+      "category": "Soft Skills",
+      "duration": "4 weeks",
+      "level": "All Levels",
+      "price": 9000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-20T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000009",
+      "title": "Digital Marketing",
+      "slug": "digital-marketing",
+      "description": "SEO, ads, and analytics for growth.",
+      "category": "Marketing",
+      "duration": "8 weeks",
+      "level": "Beginner",
+      "price": 11000,
+      "status": "PUBLISHED",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-02-25T00:00:00.000Z"
+    },
+    {
+      "id": "c1000001-0000-4000-8000-000000000010",
+      "title": "Career Development",
+      "slug": "career-development",
+      "description": "CV, interviews, and career planning.",
+      "category": "Career",
+      "duration": "5 weeks",
+      "level": "All Levels",
+      "price": 7500,
+      "status": "DRAFT",
+      "enrollmentOpen": true,
+      "certificateAvailable": true,
+      "createdAt": "2026-03-01T00:00:00.000Z",
+      "updatedAt": "2026-06-28T15:26:27.735Z"
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "e1000001-0000-4000-8000-000000000001",
+      "fullName": "Fatima Ali Khan",
+      "email": "fatima.ali.khan0@student.axiolink.com",
+      "phone": "+92 330 1111111",
+      "courseId": "c1000001-0000-4000-8000-000000000005",
+      "course": {
+        "title": "AI Foundations",
+        "slug": "ai-foundations"
+      },
+      "progress": 85,
+      "attendance": 90,
+      "paymentStatus": "PAID",
+      "status": "COMPLETED",
+      "certificateIssued": true,
+      "certificateIssuedAt": "2026-06-10T00:00:00.000Z",
+      "completedAt": "2026-06-08T00:00:00.000Z",
+      "activeAt": "2026-03-12T00:00:00.000Z",
+      "enrollmentDate": "2026-03-10T00:00:00.000Z",
+      "createdAt": "2026-03-10T00:00:00.000Z",
+      "statusHistory": [
+        {
+          "id": "738b5659-d6d6-482f-954a-288306d4f5ad",
+          "fromStatus": null,
+          "toStatus": "COMPLETED",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-03-10T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000002",
+      "fullName": "Ahmed Khan Hussain",
+      "email": "ahmed.khan.hussain1@student.axiolink.com",
+      "phone": "+92 331 2222222",
+      "courseId": "c1000001-0000-4000-8000-000000000001",
+      "course": {
+        "title": "Web Development Bootcamp",
+        "slug": "web-development-bootcamp"
+      },
+      "progress": 72,
+      "attendance": 80,
+      "paymentStatus": "PAID",
+      "status": "ACTIVE",
+      "activeAt": "2026-03-18T00:00:00.000Z",
+      "enrollmentDate": "2026-03-15T00:00:00.000Z",
+      "createdAt": "2026-03-15T00:00:00.000Z",
+      "certificateIssued": false,
+      "statusHistory": [
+        {
+          "id": "a3e4c8bc-df5d-4a28-81af-1fac0e175898",
+          "fromStatus": null,
+          "toStatus": "ACTIVE",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-03-15T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000003",
+      "fullName": "Zain Malik Ahmed",
+      "email": "zain.malik.ahmed2@student.axiolink.com",
+      "phone": "+92 332 3333333",
+      "courseId": "c1000001-0000-4000-8000-000000000002",
+      "course": {
+        "title": "Python Programming",
+        "slug": "python-programming"
+      },
+      "progress": 91,
+      "attendance": 95,
+      "paymentStatus": "PAID",
+      "status": "COMPLETED",
+      "certificateIssued": true,
+      "certificateIssuedAt": "2026-05-20T00:00:00.000Z",
+      "completedAt": "2026-05-18T00:00:00.000Z",
+      "activeAt": "2026-03-22T00:00:00.000Z",
+      "enrollmentDate": "2026-03-20T00:00:00.000Z",
+      "createdAt": "2026-03-20T00:00:00.000Z",
+      "statusHistory": [
+        {
+          "id": "07514405-b9e0-40f0-a438-3cba5f33554f",
+          "fromStatus": null,
+          "toStatus": "COMPLETED",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-03-20T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000004",
+      "fullName": "Sana Tariq Malik",
+      "email": "sana.tariq.malik3@student.axiolink.com",
+      "phone": "+92 333 4444444",
+      "courseId": "c1000001-0000-4000-8000-000000000003",
+      "course": {
+        "title": "Cybersecurity Fundamentals",
+        "slug": "cybersecurity-fundamentals"
+      },
+      "progress": 100,
+      "attendance": 75,
+      "paymentStatus": "PAID",
+      "status": "COMPLETED",
+      "activeAt": "2026-04-03T00:00:00.000Z",
+      "enrollmentDate": "2026-04-01T00:00:00.000Z",
+      "createdAt": "2026-04-01T00:00:00.000Z",
+      "certificateIssued": true,
+      "statusHistory": [
+        {
+          "id": "a159108b-94ce-416d-8f21-a95c44978e3f",
+          "fromStatus": "COMPLETED",
+          "toStatus": "COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Certificate issued",
+          "changedAt": "2026-06-28T16:01:33.374Z"
+        },
+        {
+          "id": "d50e180f-2828-4242-bfe1-86d1af328bf7",
+          "fromStatus": "ACTIVE",
+          "toStatus": "COMPLETED",
+          "changedBy": "Super Admin",
+          "note": "Course completed successfully",
+          "changedAt": "2026-06-28T16:01:31.670Z"
+        },
+        {
+          "id": "6b489e2b-3a3b-4ef6-952e-99f4f32c1238",
+          "fromStatus": null,
+          "toStatus": "ACTIVE",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-04-01T00:00:00.000Z"
+        }
+      ],
+      "completedAt": "2026-06-28T16:01:31.670Z",
+      "certificateIssuedAt": "2026-06-28T16:01:33.374Z"
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000005",
+      "fullName": "Hassan Raza Ali",
+      "email": "hassan.raza.ali4@student.axiolink.com",
+      "phone": "+92 334 5555555",
+      "courseId": "c1000001-0000-4000-8000-000000000006",
+      "course": {
+        "title": "UI/UX Design",
+        "slug": "ui-ux-design"
+      },
+      "progress": 55,
+      "attendance": 70,
+      "paymentStatus": "PARTIAL",
+      "status": "ACTIVE",
+      "activeAt": "2026-04-12T00:00:00.000Z",
+      "enrollmentDate": "2026-04-10T00:00:00.000Z",
+      "createdAt": "2026-04-10T00:00:00.000Z",
+      "certificateIssued": false,
+      "statusHistory": [
+        {
+          "id": "cfc5f73b-014b-4799-9c95-0bc100866a12",
+          "fromStatus": null,
+          "toStatus": "ACTIVE",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-04-10T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000006",
+      "fullName": "Maryam Raza Khan",
+      "email": "maryam.raza.khan5@student.axiolink.com",
+      "phone": "+92 335 6666666",
+      "courseId": "c1000001-0000-4000-8000-000000000009",
+      "course": {
+        "title": "Digital Marketing",
+        "slug": "digital-marketing"
+      },
+      "progress": 44,
+      "attendance": 60,
+      "paymentStatus": "PENDING",
+      "status": "NEW",
+      "enrollmentDate": "2026-04-15T00:00:00.000Z",
+      "createdAt": "2026-04-15T00:00:00.000Z",
+      "certificateIssued": false,
+      "statusHistory": [
+        {
+          "id": "2a7aea98-da4d-41f9-ae1b-61bf3dbeae42",
+          "fromStatus": null,
+          "toStatus": "NEW",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-04-15T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000007",
+      "fullName": "Omar Farooq Hussain",
+      "email": "omar.farooq.hussain6@student.axiolink.com",
+      "phone": "+92 336 7777777",
+      "courseId": "c1000001-0000-4000-8000-000000000004",
+      "course": {
+        "title": "Freelancing Masterclass",
+        "slug": "freelancing-masterclass"
+      },
+      "progress": 100,
+      "attendance": 100,
+      "paymentStatus": "PAID",
+      "status": "COMPLETED",
+      "certificateIssued": false,
+      "completedAt": "2026-06-01T00:00:00.000Z",
+      "activeAt": "2026-04-22T00:00:00.000Z",
+      "enrollmentDate": "2026-04-20T00:00:00.000Z",
+      "createdAt": "2026-04-20T00:00:00.000Z",
+      "statusHistory": [
+        {
+          "id": "33ccbb54-53d5-462f-81e2-600dbb5aeca9",
+          "fromStatus": null,
+          "toStatus": "COMPLETED",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-04-20T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "e1000001-0000-4000-8000-000000000008",
+      "fullName": "Laiba Butt Ahmed",
+      "email": "laiba.butt.ahmed7@student.axiolink.com",
+      "phone": "+92 337 8888888",
+      "courseId": "c1000001-0000-4000-8000-000000000007",
+      "course": {
+        "title": "Graphic Design",
+        "slug": "graphic-design"
+      },
+      "progress": 78,
+      "attendance": 82,
+      "paymentStatus": "PAID",
+      "status": "ACTIVE",
+      "activeAt": "2026-05-03T00:00:00.000Z",
+      "enrollmentDate": "2026-05-01T00:00:00.000Z",
+      "createdAt": "2026-05-01T00:00:00.000Z",
+      "certificateIssued": false,
+      "statusHistory": [
+        {
+          "id": "940a426e-f734-4db9-9fec-b8a367a54eeb",
+          "fromStatus": null,
+          "toStatus": "ACTIVE",
+          "changedBy": "System",
+          "note": "Enrollment created",
+          "changedAt": "2026-05-01T00:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "certificates": [
+    {
+      "id": "40da9341-0bb2-4339-885a-ec51fd32fdd2",
+      "certificateCode": "BP-2026-2104",
+      "studentName": "Sana Tariq Malik",
+      "courseName": "Cybersecurity Fundamentals",
+      "enrollmentId": "e1000001-0000-4000-8000-000000000004",
+      "courseId": "c1000001-0000-4000-8000-000000000003",
+      "issueDate": "2026-06-28T16:01:33.374Z",
+      "verificationUrl": "/verify-certificate/BP-2026-2104",
+      "isValid": true,
+      "createdAt": "2026-06-28T16:01:33.374Z"
+    },
+    {
+      "id": "cert001-0000-4000-8000-000000000002",
+      "certificateCode": "BP-2026-1002",
+      "studentName": "Zain Malik Ahmed",
+      "courseName": "Python Programming",
+      "issueDate": "2026-05-20T00:00:00.000Z",
+      "verificationUrl": "/verify-certificate/BP-2026-1002",
+      "isValid": true,
+      "createdAt": "2026-05-20T00:00:00.000Z"
+    },
+    {
+      "id": "cert001-0000-4000-8000-000000000003",
+      "certificateCode": "BP-2026-1042",
+      "studentName": "Fatima Ali Khan",
+      "courseName": "AI Foundations",
+      "issueDate": "2026-06-10T00:00:00.000Z",
+      "verificationUrl": "/verify-certificate/BP-2026-1042",
+      "isValid": true,
+      "createdAt": "2026-06-10T00:00:00.000Z"
+    },
+    {
+      "id": "cert001-0000-4000-8000-000000000004",
+      "certificateCode": "BP-2026-1018",
+      "studentName": "Ahmed Khan Hussain",
+      "courseName": "Web Development Bootcamp",
+      "issueDate": "2026-06-05T00:00:00.000Z",
+      "verificationUrl": "/verify-certificate/BP-2026-1018",
+      "isValid": true,
+      "createdAt": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "cert001-0000-4000-8000-000000000005",
+      "certificateCode": "BP-2026-1035",
+      "studentName": "Laiba Butt Ahmed",
+      "courseName": "Graphic Design",
+      "issueDate": "2026-06-01T00:00:00.000Z",
+      "verificationUrl": "/verify-certificate/BP-2026-1035",
+      "isValid": true,
+      "createdAt": "2026-06-01T00:00:00.000Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1000001-0000-4000-8000-000000000001",
+      "name": "Ahmed Khan",
+      "email": "ahmed.khan0@inquiry.com",
+      "phone": "+92 300 1111111",
+      "subject": "Internship inquiry",
+      "message": "Hello, I would like to learn more about frontend internships.",
+      "status": "NEW",
+      "createdAt": "2026-06-27T08:00:00.000Z"
+    },
+    {
+      "id": "m1000001-0000-4000-8000-000000000002",
+      "name": "Fatima Ali",
+      "email": "fatima.ali1@inquiry.com",
+      "phone": "+92 300 2222222",
+      "subject": "Buland Parwaz enrollment question",
+      "message": "How do I enroll in AI Foundations?",
+      "status": "NEW",
+      "createdAt": "2026-06-26T09:30:00.000Z"
+    },
+    {
+      "id": "m1000001-0000-4000-8000-000000000003",
+      "name": "Usman Ali",
+      "email": "usman.ali2@inquiry.com",
+      "subject": "Partnership opportunity",
+      "message": "We are interested in a training partnership.",
+      "status": "READ",
+      "createdAt": "2026-06-25T11:00:00.000Z"
+    },
+    {
+      "id": "m1000001-0000-4000-8000-000000000004",
+      "name": "Sana Malik",
+      "email": "sana.malik3@inquiry.com",
+      "subject": "Project quote request",
+      "message": "Please share pricing for a custom web app.",
+      "status": "REPLIED",
+      "reply": "Thank you — our team will follow up shortly.",
+      "createdAt": "2026-06-24T10:00:00.000Z"
+    },
+    {
+      "id": "m1000001-0000-4000-8000-000000000005",
+      "name": "Hassan Raza",
+      "email": "hassan.raza4@inquiry.com",
+      "subject": "Certificate verification help",
+      "message": "Need help verifying certificate BP-2026-1042.",
+      "status": "NEW",
+      "createdAt": "2026-06-23T14:00:00.000Z"
+    }
+  ],
+  "blogs": [
+    {
+      "id": "74b14663-1326-4d10-b376-ed4cdd31ea83",
+      "slug": "test-post",
+      "status": "DRAFT",
+      "author": "Axiolink Content Team",
+      "tags": [],
+      "content": "# Hello",
+      "createdAt": "2026-06-28T15:20:30.096Z",
+      "updatedAt": "2026-06-28T15:20:30.096Z",
+      "title": "Test Post"
+    },
+    {
+      "id": "b1000001-0000-4000-8000-000000000001",
+      "title": "How We Built Our Internship Program at Axiolink",
+      "slug": "how-we-built-our-internship-program",
+      "excerpt": "Inside our mentor-led internship model.",
+      "category": "Company",
+      "tags": [
+        "internships",
+        "careers"
+      ],
+      "author": "Axiolink Content Team",
+      "status": "PUBLISHED",
+      "featuredImage": "https://picsum.photos/seed/axiolink-blog-internship/1200/630",
+      "publishedAt": "2026-05-10T00:00:00.000Z",
+      "createdAt": "2026-05-10T00:00:00.000Z",
+      "content": "Inside our mentor-led internship model."
+    },
+    {
+      "id": "b1000001-0000-4000-8000-000000000002",
+      "title": "5 Skills Every Frontend Developer Needs in 2026",
+      "slug": "frontend-skills-2026",
+      "excerpt": "Essential skills for modern frontend engineers.",
+      "category": "Engineering",
+      "tags": [
+        "frontend",
+        "react"
+      ],
+      "author": "Axiolink Content Team",
+      "status": "PUBLISHED",
+      "featuredImage": "https://picsum.photos/seed/axiolink-blog-frontend/1200/630",
+      "publishedAt": "2026-05-18T00:00:00.000Z",
+      "createdAt": "2026-05-18T00:00:00.000Z",
+      "content": "Essential skills for modern frontend engineers."
+    },
+    {
+      "id": "b1000001-0000-4000-8000-000000000003",
+      "title": "Introducing Buland Parwaz: Our Training Initiative",
+      "slug": "introducing-buland-parwaz",
+      "excerpt": "Launching our national training program.",
+      "category": "Education",
+      "tags": [
+        "buland-parwaz"
+      ],
+      "author": "Axiolink Content Team",
+      "status": "PUBLISHED",
+      "featuredImage": "https://picsum.photos/seed/axiolink-blog-bp/1200/630",
+      "publishedAt": "2026-05-25T00:00:00.000Z",
+      "createdAt": "2026-05-25T00:00:00.000Z",
+      "content": "Launching our national training program."
+    },
+    {
+      "id": "b1000001-0000-4000-8000-000000000004",
+      "title": "Cybersecurity Best Practices for Startups",
+      "slug": "cybersecurity-best-practices",
+      "excerpt": "Security fundamentals for growing teams.",
+      "category": "Security",
+      "tags": [
+        "security"
+      ],
+      "author": "Axiolink Content Team",
+      "status": "PUBLISHED",
+      "publishedAt": "2026-06-02T00:00:00.000Z",
+      "createdAt": "2026-06-02T00:00:00.000Z",
+      "content": "Security fundamentals for growing teams."
+    },
+    {
+      "id": "b1000001-0000-4000-8000-000000000005",
+      "title": "Upcoming Events and Community Workshops",
+      "slug": "upcoming-events",
+      "excerpt": "Draft post for upcoming events.",
+      "category": "Events",
+      "tags": [
+        "events"
+      ],
+      "author": "Axiolink Content Team",
+      "status": "DRAFT",
+      "createdAt": "2026-06-20T00:00:00.000Z",
+      "content": "Draft post for upcoming events."
+    }
+  ],
+  "settings": [
+    {
+      "key": "company",
+      "value": {
+        "name": "Axiolink Systems (Pvt) Ltd.",
+        "email": "contact.axiolink@gmail.com",
+        "phone": "+92 370 5834161",
+        "address": "Lahore, Pakistan"
+      }
+    },
+    {
+      "key": "seo",
+      "value": {
+        "defaultTitle": "Axiolink Systems (Pvt) Ltd.",
+        "defaultDescription": "Enterprise software solutions and Buland Parwaz training"
+      }
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp001-0000-4000-8000-000000000001",
+      "employeeCode": "AXL-0001",
+      "fullName": "Hamza Sheikh",
+      "email": "hamza.sheikh@axiolinksystems.com",
+      "phone": "+92 300 1000001",
+      "jobTitle": "Senior Frontend Engineer",
+      "department": {
+        "name": "Frontend"
+      },
+      "photoUrl": "https://i.pravatar.cc/300?u=axiolink-emp-AXL-0001",
+      "status": "ACTIVE",
+      "hireDate": "2024-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "emp001-0000-4000-8000-000000000002",
+      "employeeCode": "AXL-0002",
+      "fullName": "Hassan Raza",
+      "email": "hassan.raza@axiolinksystems.com",
+      "phone": "+92 300 1000002",
+      "jobTitle": "Backend Lead",
+      "department": {
+        "name": "Backend"
+      },
+      "photoUrl": "https://i.pravatar.cc/300?u=axiolink-emp-AXL-0002",
+      "status": "ACTIVE",
+      "hireDate": "2023-09-01T00:00:00.000Z"
+    },
+    {
+      "id": "emp001-0000-4000-8000-000000000003",
+      "employeeCode": "AXL-0003",
+      "fullName": "Sara Ahmed",
+      "email": "sara.ahmed@axiolinksystems.com",
+      "phone": "+92 300 1000003",
+      "jobTitle": "HR Manager",
+      "department": {
+        "name": "HR"
+      },
+      "photoUrl": "https://i.pravatar.cc/300?u=axiolink-emp-AXL-0003",
+      "status": "ACTIVE",
+      "hireDate": "2024-01-15T00:00:00.000Z"
+    }
+  ]
+}

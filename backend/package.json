@@ -1,0 +1,50 @@
+{
+  "name": "axiolink-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "seed": "node prisma/seed.js",
+    "clear:demo-db": "node scripts/clear-demo-db.js",
+    "db:clear": "node scripts/clear-demo-db.js",
+    "db:purge-keep-internships-blogs": "node scripts/purge-keep-internships-blogs.js",
+    "seed:internships": "node scripts/seed-default-internships.js",
+    "seed:hybrid-internships": "node scripts/seed-hybrid-internships.js",
+    "seed:ceo-blog": "node scripts/seed-ceo-blog.js",
+    "seed:blog-articles": "node scripts/seed-blog-articles.js",
+    "db:studio": "prisma studio",
+    "db:setup": "prisma migrate deploy && node prisma/seed.js",
+    "db:dev": "prisma dev -d",
+    "db:dev:setup": "prisma migrate deploy && node prisma/seed.js",
+    "hash-password": "node scripts/hash-password.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}

@@ -1,0 +1,30 @@
+import app from "./app.js";
+import { env } from "./config/env.js";
+
+const start = async () => {
+  if (env.useDemoData) {
+    console.log("✓ Demo data mode — serving from backend/data/demo-data.json");
+  } else if (!env.isDatabaseConfigured) {
+    if (env.nodeEnv === "production") {
+      console.error("\n❌ DATABASE_URL is required in production.\n");
+      process.exit(1);
+    }
+    console.warn("\n⚠️  DATABASE_URL not set — API will run in auth-only mode (Super Admin login works).");
+    console.warn("   Add your Neon connection string to backend/.env when ready.\n");
+  } else {
+    console.log("✓ Database URL configured");
+  }
+
+  if (!env.admin.email || !env.admin.passwordHash) {
+    console.warn("⚠️  Set ADMIN_EMAIL and ADMIN_PASSWORD_HASH in backend/.env");
+    console.warn("   Generate hash: node scripts/hash-password.js YourPassword\n");
+  }
+
+  app.listen(env.port, () => {
+    console.log(`✓ Axiolink API → http://localhost:${env.port}`);
+    console.log(`✓ Health check → http://localhost:${env.port}/api/health`);
+    if (env.admin.email) console.log(`✓ Super Admin email → ${env.admin.email}`);
+  });
+};
+
+start();
