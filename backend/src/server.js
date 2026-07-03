@@ -20,9 +20,17 @@ const start = async () => {
     console.warn("   Generate hash: node scripts/hash-password.js YourPassword\n");
   }
 
-  app.listen(env.port, () => {
-    console.log(`✓ Axiolink API → http://localhost:${env.port}`);
-    console.log(`✓ Health check → http://localhost:${env.port}/api/health`);
+  const host = env.nodeEnv === "production" ? "0.0.0.0" : undefined;
+
+  app.listen(env.port, host, () => {
+    const base =
+      env.nodeEnv === "production"
+        ? `port ${env.port}`
+        : `http://localhost:${env.port}`;
+
+    console.log(`✓ Axiolink API → ${base}`);
+    console.log(`✓ Health check → /api/health`);
+    console.log(`✓ Allowed CORS origins → ${env.clientUrls.join(", ")}`);
     if (env.admin.email) console.log(`✓ Super Admin email → ${env.admin.email}`);
   });
 };

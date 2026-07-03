@@ -77,7 +77,7 @@ function validateEnv() {
 validateEnv();
 
 const clientUrls = (
-  process.env.CLIENT_URL || "http://localhost:3005"
+  process.env.CLIENT_URL || "http://localhost:3005,http://localhost:5173"
 )
   .split(",")
   .map((url) => url.trim())
