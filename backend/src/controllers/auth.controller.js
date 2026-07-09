@@ -1,33 +1,50 @@
 import { authService } from "../services/auth.service.js";
-import { loginSchema, refreshSchema, changePasswordSchema } from "../validators/schemas.js";
+import { loginSchema, changePasswordSchema } from "../validators/schemas.js";
 import { validate } from "../utils/validate.js";
-import { asyncHandler, success } from "../utils/helpers.js";
+import { asyncHandler, success, ApiError } from "../utils/helpers.js";
 import { audit } from "../services/audit.service.js";
+import {
+  setAuthCookies,
+  setAccessTokenCookie,
+  clearAuthCookies,
+} from "../utils/authCookies.js";
 
 export const login = asyncHandler(async (req, res) => {
   const body = validate(loginSchema, req.body);
-  const result = await authService.login(body);
+  const { user, accessToken, refreshToken } = await authService.login(body);
+
+  setAuthCookies(res, {
+    accessToken,
+    refreshToken,
+    rememberMe: body.rememberMe,
+  });
 
   await audit({
     userId: null,
-    userEmail: result.user.email,
+    userEmail: user.email,
     action: "ADMIN_LOGIN",
     entity: "User",
     ip: req.ip,
   });
 
-  success(res, result, 200, "Login successful");
+  success(res, { user }, 200, "Login successful");
 });
 
 export const refresh = asyncHandler(async (req, res) => {
-  const { refreshToken } = validate(refreshSchema, req.body);
-  const result = await authService.refresh(refreshToken);
-  success(res, result);
+  const refreshToken = req.cookies?.refreshToken;
+  if (!refreshToken) {
+    throw new ApiError(401, "Refresh token required");
+  }
+
+  const { accessToken } = await authService.refresh(refreshToken);
+  setAccessTokenCookie(res, accessToken);
+  success(res, { refreshed: true });
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  const refreshToken = req.body.refreshToken || req.cookies?.refreshToken;
+  const refreshToken = req.cookies?.refreshToken;
   const result = await authService.logout(refreshToken);
+  clearAuthCookies(res);
   success(res, result, 200, "Logged out successfully");
 });
 

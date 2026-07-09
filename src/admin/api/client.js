@@ -6,37 +6,28 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
     const isAuthRoute =
       original?.url?.includes("/auth/login") ||
-      original?.url?.includes("/auth/refresh");
+      original?.url?.includes("/auth/refresh") ||
+      original?.url?.includes("/auth/logout");
+
     if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
       original._retry = true;
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (refreshToken) {
-        try {
-          const { data } = await axios.post(apiUrl("auth/refresh"), {
-            refreshToken,
-          });
-          localStorage.setItem("accessToken", data.data.accessToken);
-          original.headers.Authorization = `Bearer ${data.data.accessToken}`;
-          return api(original);
-        } catch {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
+
+      try {
+        await axios.post(apiUrl("auth/refresh"), {}, { withCredentials: true });
+        return api(original);
+      } catch {
+        if (!window.location.pathname.startsWith("/admin/login")) {
           window.location.href = "/admin/login";
         }
       }
     }
+
     return Promise.reject(error);
   }
 );

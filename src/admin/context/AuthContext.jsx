@@ -8,17 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     try {
       const { data } = await api.get("/auth/me");
       setUser(data.data);
     } catch {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
       setUser(null);
     } finally {
       setLoading(false);
@@ -31,21 +24,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, rememberMe) => {
     const { data } = await api.post("/auth/login", { email, password, rememberMe });
-    localStorage.setItem("accessToken", data.data.accessToken);
-    localStorage.setItem("refreshToken", data.data.refreshToken);
     setUser(data.data.user);
     return data.data.user;
   };
 
   const logout = async () => {
-    const refreshToken = localStorage.getItem("refreshToken");
     try {
-      await api.post("/auth/logout", { refreshToken });
+      await api.post("/auth/logout");
     } catch {
       /* ignore */
     }
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
     setUser(null);
   };
 
