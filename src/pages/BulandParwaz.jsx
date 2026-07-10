@@ -9,6 +9,7 @@ import BulandParwazPillars from "../components/buland-parwaz/BulandParwazPillars
 import { fetchPublicCourses } from "../api/public";
 import { getCourseDisplayImage } from "../utils/courseImages";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
 
 const mapApiCourse = (c) => ({
   id: c.slug || c.id,
@@ -29,12 +30,7 @@ const BulandParwaz = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  usePageMeta({
-    title: "Buland Parwaz Program | Axiolink Systems (Pvt) Ltd.",
-    description:
-      "Professional training bootcamps, courses, and mentorship through the Buland Parwaz Program by Axiolink Systems.",
-    canonical: "https://axiolinksystems.com/buland-parwaz",
-  });
+  usePageMeta(PAGE_META.bulandParwaz);
 
   useEffect(() => {
     fetchPublicCourses()

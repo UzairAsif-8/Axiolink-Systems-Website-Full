@@ -15,6 +15,7 @@ import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import { fetchJobBySlug } from "../api/jobs";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { jobMeta } from "../seo/pageMeta";
 
 const DetailBlock = ({ title, items }) =>
   items?.length > 0 ? (
@@ -52,15 +53,7 @@ const JobDetail = () => {
 
   const job = data?.data;
 
-  usePageMeta({
-    title: job
-      ? `${job.title} | Careers | Axiolink Systems (Pvt) Ltd.`
-      : "Job | Axiolink Systems (Pvt) Ltd.",
-    description: job?.description,
-    canonical: job
-      ? `https://axiolinksystems.com/careers/jobs/${job.slug}`
-      : undefined,
-  });
+  usePageMeta(job ? jobMeta(job) : { title: "Job | Axiolink Systems (Pvt) Ltd." });
 
   if (isLoading) {
     return (

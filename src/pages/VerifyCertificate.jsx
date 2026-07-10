@@ -5,10 +5,21 @@ import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import CertificateVerification from "../components/buland-parwaz/CertificateVerification";
 import BulandParwazLogo from "../assets/BulandParwazLogo.png";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
+import { siteUrl } from "../seo/siteConfig";
 
 const VerifyCertificate = () => {
   const { code: urlCode } = useParams();
   const navigate = useNavigate();
+
+  usePageMeta({
+    ...PAGE_META.verifyCertificate,
+    canonical: urlCode
+      ? siteUrl(`/verify-certificate/${encodeURIComponent(urlCode)}`)
+      : PAGE_META.verifyCertificate.canonical,
+    noindex: Boolean(urlCode),
+  });
 
   const handleVerifyWithNavigation = (certificateCode) => {
     navigate(

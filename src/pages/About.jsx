@@ -10,7 +10,21 @@ import BulandParwazCard from "../components/buland-parwaz/BulandParwazCard";
 import Logo from "../assets/LogoSimple.png";
 import { stockImages } from "../data/stockImages";
 import { COMPANY_NAME } from "../data/company";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
+import { buildAboutPageSchema, buildBreadcrumbSchema } from "../seo/schemas";
+
 const About = () => {
+  usePageMeta(PAGE_META.about);
+  useJsonLd([
+    buildAboutPageSchema(),
+    buildBreadcrumbSchema([
+      { name: "Home", href: "/" },
+      { name: "About", href: "/about" },
+    ]),
+  ]);
+
   const navigate = useNavigate();
   const location = useLocation();
 

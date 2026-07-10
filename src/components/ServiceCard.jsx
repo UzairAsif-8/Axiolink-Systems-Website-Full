@@ -20,6 +20,10 @@ const ServiceCard = ({ service, index = 0 }) => {
             <img
               src={image}
               alt={title}
+              width={640}
+              height={224}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/30 to-neutral-950/10 transition-opacity duration-500 group-hover:from-neutral-950/95" />

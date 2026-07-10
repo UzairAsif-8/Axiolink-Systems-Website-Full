@@ -10,6 +10,7 @@ import BlogBreadcrumbs from "../components/blog/BlogBreadcrumbs";
 import { stockImages } from "../data/stockImages";
 import { fetchPublicBlogs, apiUrl } from "../api/public";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META, blogCategoryMeta, blogTagMeta } from "../seo/pageMeta";
 import {
   BLOG_CATEGORIES,
   POSTS_PER_PAGE,
@@ -97,26 +98,16 @@ const BlogArchive = ({ filterType = null }) => {
     return "Blog";
   }, [filterType, decodedFilter]);
 
-  usePageMeta({
-    title:
-      filterType === "category"
-        ? `${pageTitle} Articles | Axiolink Systems Blog`
-        : filterType === "tag"
-          ? `${decodedFilter} | Axiolink Systems Blog`
-          : "Enterprise Technology Insights | Axiolink Systems Blog",
-    description:
-      filterType === "category"
-        ? `Browse ${pageTitle.toLowerCase()} articles on AI, software engineering, and digital transformation from Axiolink Systems.`
-        : filterType === "tag"
-          ? `Articles tagged "${decodedFilter}" from the Axiolink Systems technology blog.`
-          : "Expert insights on AI, cloud, cybersecurity, SaaS, and enterprise software from Axiolink Systems (Pvt) Ltd.",
-    canonical:
-      filterType === "category"
-        ? `https://axiolinksystems.com/blog/category/${decodedFilter}`
-        : filterType === "tag"
-          ? `https://axiolinksystems.com/blog/tag/${encodeURIComponent(decodedFilter)}`
-          : "https://axiolinksystems.com/blog",
-  });
+  const pageMeta = useMemo(() => {
+    if (filterType === "category" && decodedFilter) {
+      const cat = BLOG_CATEGORIES.find((c) => c.id === decodedFilter.toLowerCase());
+      return blogCategoryMeta(cat?.name || decodedFilter, decodedFilter);
+    }
+    if (filterType === "tag" && decodedFilter) return blogTagMeta(decodedFilter);
+    return PAGE_META.blog;
+  }, [filterType, decodedFilter]);
+
+  usePageMeta(pageMeta);
 
   const breadcrumbs = [{ label: "Blog", href: "/blog" }];
   if (filterType === "category") {

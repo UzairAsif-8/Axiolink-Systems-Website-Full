@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import JobApplicationForm from "../components/careers/JobApplicationForm";
 import { fetchJobBySlug } from "../api/jobs";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { siteUrl } from "../seo/siteConfig";
 
 const JobApply = () => {
   const { slug } = useParams();
@@ -25,8 +26,9 @@ const JobApply = () => {
       ? `Submit your application for ${job.title}.`
       : "Submit your job application to Axiolink Systems (Pvt) Ltd.",
     canonical: slug
-      ? `https://axiolinksystems.com/careers/jobs/${slug}/apply`
-      : "https://axiolinksystems.com/careers/jobs/apply",
+      ? siteUrl(`/careers/jobs/${slug}/apply`)
+      : siteUrl("/careers/jobs/apply"),
+    noindex: true,
   });
 
   if (slug && isLoading) {

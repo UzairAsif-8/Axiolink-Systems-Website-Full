@@ -10,6 +10,7 @@ import FAQSection from "../components/careers/FAQSection";
 import { fetchInternships, getOpenInternships } from "../api/internships";
 import { fetchJobs, getOpenJobs } from "../api/jobs";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
 import Button from "../components/ui/Button";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
@@ -29,15 +30,7 @@ const Careers = () => {
   const openInternships = getOpenInternships(apiInternships);
   const openJobs = getOpenJobs(apiJobs);
 
-  usePageMeta({
-    title: "Careers | Axiolink Systems (Pvt) Ltd.",
-    description:
-      "Build your career at Axiolink Systems (Pvt) Ltd. Join our team in engineering, design, AI, and business — with mentorship, growth, and meaningful work.",
-    ogTitle: "Careers at Axiolink Systems (Pvt) Ltd.",
-    ogDescription:
-      "Explore career opportunities at Axiolink Systems (Pvt) Ltd. and grow with a team building enterprise technology solutions.",
-    canonical: "https://axiolinksystems.com/careers",
-  });
+  usePageMeta(PAGE_META.careers);
 
   const jobListingsSchema = {
     "@context": "https://schema.org",

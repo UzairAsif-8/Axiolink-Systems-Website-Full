@@ -11,8 +11,25 @@ import {
   serviceCategories,
   toProductCard,
 } from "../data/services";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
+import { buildBreadcrumbSchema, buildWebPageSchema } from "../seo/schemas";
 
 const Services = () => {
+  usePageMeta(PAGE_META.services);
+  useJsonLd([
+    buildWebPageSchema({
+      name: PAGE_META.services.title,
+      description: PAGE_META.services.description,
+      url: PAGE_META.services.canonical,
+    }),
+    buildBreadcrumbSchema([
+      { name: "Home", href: "/" },
+      { name: "Services", href: "/services" },
+    ]),
+  ]);
+
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -76,7 +93,7 @@ const Services = () => {
             <div className="flex-1 relative max-w-xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5" />
               <Input
-                type="text"
+                label="Search services"
                 placeholder="Search services..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}

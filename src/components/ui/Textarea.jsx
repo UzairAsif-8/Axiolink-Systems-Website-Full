@@ -1,24 +1,38 @@
-import { forwardRef } from "react";
+import { forwardRef, useId } from "react";
 
 const Textarea = forwardRef(
-  ({ label, error, helperText, className = "", ...props }, ref) => {
+  ({ label, error, helperText, className = "", id, ...props }, ref) => {
+    const autoId = useId();
+    const inputId = id || autoId;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const helperId = helperText && !error ? `${inputId}-helper` : undefined;
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label htmlFor={inputId} className="block text-sm font-medium text-neutral-700 mb-2">
             {label}
           </label>
         )}
         <textarea
           ref={ref}
+          id={inputId}
+          aria-invalid={error ? "true" : undefined}
+          aria-describedby={[errorId, helperId].filter(Boolean).join(" ") || undefined}
           className={`w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 resize-none ${
             error ? "border-red-300 focus:ring-red-500" : "border-neutral-200"
           } ${className}`}
           {...props}
         />
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p id={errorId} className="mt-2 text-sm text-red-600" role="alert">
+            {error}
+          </p>
+        )}
         {helperText && !error && (
-          <p className="mt-2 text-sm text-neutral-500">{helperText}</p>
+          <p id={helperId} className="mt-2 text-sm text-neutral-500">
+            {helperText}
+          </p>
         )}
       </div>
     );
@@ -28,5 +42,3 @@ const Textarea = forwardRef(
 Textarea.displayName = "Textarea";
 
 export default Textarea;
-
-

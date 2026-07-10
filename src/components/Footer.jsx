@@ -67,6 +67,10 @@ const Footer = () => {
                     className="h-40 sm:h-44 md:h-48 lg:h-52 w-auto max-w-[min(100%,480px)] object-contain object-center sm:object-left mx-auto sm:mx-0"
                     src={Logo}
                     alt={COMPANY_LEGAL_NAME}
+                    width={480}
+                    height={208}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </Link>
               </div>
@@ -107,13 +111,9 @@ const Footer = () => {
 
           {/* Links */}
           <div className="flex flex-col items-center sm:items-start">
-            <motion.h4
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="text-lg sm:text-xl font-semibold mb-3 text-white"
-            >
+            <p className="text-lg sm:text-xl font-semibold mb-3 text-white">
               Services
-            </motion.h4>
+            </p>
             <motion.ul
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -134,13 +134,9 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col items-center sm:items-start">
-            <motion.h4
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="text-lg sm:text-xl font-semibold mb-3 text-white"
-            >
+            <p className="text-lg sm:text-xl font-semibold mb-3 text-white">
               Company
-            </motion.h4>
+            </p>
             <motion.ul
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -161,13 +157,9 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col items-center sm:items-start">
-            <motion.h4
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="text-lg sm:text-xl font-semibold mb-3 text-white"
-            >
+            <p className="text-lg sm:text-xl font-semibold mb-3 text-white">
               Resources
-            </motion.h4>
+            </p>
             <motion.ul
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

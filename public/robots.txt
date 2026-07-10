@@ -1,9 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://axiolink-systems-website-full.onrender.com/api/blogs/meta/sitemap.xml
-
-# Blog RSS
-# https://axiolink-systems-website-full.onrender.com/api/blogs/feed/rss.xml
-
 Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.axiolinksystems.com/sitemap.xml

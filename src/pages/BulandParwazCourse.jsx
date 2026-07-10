@@ -23,6 +23,8 @@ import {
 } from "../data/bulandParwazCourses";
 import { fetchPublicCourseBySlug } from "../api/public";
 import { getCourseDisplayImage } from "../utils/courseImages";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META, courseMeta } from "../seo/pageMeta";
 
 const mapApiCourseDetail = (c) => ({
   id: c.slug || c.id,
@@ -46,6 +48,12 @@ const BulandParwazCourse = () => {
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  usePageMeta(
+    course && courseId
+      ? courseMeta(course, courseId)
+      : { title: "Course | Buland Parwaz Program" }
+  );
 
   useEffect(() => {
     let cancelled = false;

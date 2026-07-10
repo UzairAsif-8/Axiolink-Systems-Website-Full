@@ -5,17 +5,13 @@ import {
 } from "lucide-react";
 import LegalPageLayout from "../components/legal/LegalPageLayout";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
 import { SITE_CONTACT } from "../data/siteContact";
 
 const LAST_UPDATED = "June 22, 2025";
 
 const Terms = () => {
-  usePageMeta({
-    title: "Terms of Service | Axiolink Systems (Pvt) Ltd.",
-    description:
-      "Read the Terms of Service governing your use of Axiolink Systems (Pvt) Ltd. website, enterprise solutions, internships, and Buland Parwaz training programs.",
-    canonical: "https://axiolinksystems.com/legal/terms",
-  });
+  usePageMeta(PAGE_META.terms);
 
   const sections = [
     {

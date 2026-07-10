@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import InternshipApplicationForm from "../components/careers/InternshipApplicationForm";
 import { fetchInternshipBySlug } from "../api/internships";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { siteUrl } from "../seo/siteConfig";
 
 const InternshipApply = () => {
   const { slug } = useParams();
@@ -25,8 +26,9 @@ const InternshipApply = () => {
       ? `Submit your application for ${internship.title} at Axiolink Systems (Pvt) Ltd.`
       : "Submit your internship application to Axiolink Systems (Pvt) Ltd.",
     canonical: slug
-      ? `https://axiolinksystems.com/careers/${slug}/apply`
-      : "https://axiolinksystems.com/careers/apply",
+      ? siteUrl(`/careers/${slug}/apply`)
+      : siteUrl("/careers/apply"),
+    noindex: true,
   });
 
   if (slug && isLoading) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -16,11 +16,25 @@ import Badge from "../components/ui/Badge";
 import ProductCard from "../components/ProductCard";
 import TrustStrip from "../components/TrustStrip";
 import CEOSection from "../components/CEOSection";
-import Antigravity from "../components/Antigravity/Antigravity";
 import { COMPANY_NAME } from "../data/company";
 import { getHomeServices, toProductCard } from "../data/services";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
+import { buildWebPageSchema } from "../seo/schemas";
+
+const Antigravity = lazy(() => import("../components/Antigravity/Antigravity"));
 
 const Home = () => {
+  usePageMeta(PAGE_META.home);
+  useJsonLd(
+    buildWebPageSchema({
+      name: PAGE_META.home.title,
+      description: PAGE_META.home.description,
+      url: PAGE_META.home.canonical,
+    })
+  );
+
   const navigate = useNavigate();
   const [heroEl, setHeroEl] = useState(null);
   const services = getHomeServices().map(toProductCard);
@@ -64,11 +78,13 @@ const Home = () => {
       >
         <div className="absolute inset-0 z-0 h-full w-full pointer-events-none" aria-hidden="true">
           {heroEl && (
-            <Antigravity
-              eventSource={heroEl}
-              autoAnimate
-              color="#93c5fd"
-            />
+            <Suspense fallback={null}>
+              <Antigravity
+                eventSource={heroEl}
+                autoAnimate
+                color="#93c5fd"
+              />
+            </Suspense>
           )}
         </div>
 

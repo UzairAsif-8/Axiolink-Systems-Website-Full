@@ -1,0 +1,25 @@
+{
+  "name": "Axiolink Systems",
+  "short_name": "Axiolink",
+  "description": "AI, software development, mobile apps, cloud solutions, and enterprise technology services.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "lang": "en",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logoTransparent.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logoTransparent.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

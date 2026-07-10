@@ -11,10 +11,10 @@ import SocialShare from "../components/blog/SocialShare";
 import { stockImages } from "../data/stockImages";
 import { fetchPublicBlogBySlug, fetchPublicBlogs } from "../api/public";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { blogPostMeta } from "../seo/pageMeta";
 import { useJsonLd } from "../hooks/useJsonLd";
 import {
   estimateReadTime,
-  blogCanonical,
   buildArticleSchema,
   extractFaqsFromHtml,
   buildFaqSchema,
@@ -49,19 +49,7 @@ const BlogPost = () => {
     [post]
   );
 
-  const canonical = post ? blogCanonical(post.slug) : undefined;
-
-  usePageMeta({
-    title: post
-      ? `${post.seoTitle || post.title} | Axiolink Systems Blog`
-      : "Blog | Axiolink Systems",
-    description: post?.seoDescription || post?.excerpt,
-    ogTitle: post?.seoTitle || post?.title,
-    ogDescription: post?.seoDescription || post?.excerpt,
-    ogImage: post?.featuredImage,
-    ogType: "article",
-    canonical,
-  });
+  usePageMeta(post ? blogPostMeta(post) : { title: "Blog | Axiolink Systems" });
 
   const faqs = useMemo(
     () => (post ? extractFaqsFromHtml(post.content) : []),

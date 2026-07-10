@@ -17,6 +17,7 @@ import HiringProcessTimeline from "../components/careers/HiringProcessTimeline";
 import { fetchInternshipBySlug } from "../api/internships";
 import { getInternshipIcon } from "../components/careers/internshipIcons";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { internshipMeta } from "../seo/pageMeta";
 
 const DetailBlock = ({ title, items }) =>
   items?.length > 0 ? (
@@ -54,15 +55,11 @@ const InternshipDetail = () => {
 
   const internship = data?.data;
 
-  usePageMeta({
-    title: internship
-      ? `${internship.title} | Careers | Axiolink Systems (Pvt) Ltd.`
-      : "Internship | Axiolink Systems (Pvt) Ltd.",
-    description: internship?.description,
-    canonical: internship
-      ? `https://axiolinksystems.com/careers/${internship.slug}`
-      : undefined,
-  });
+  usePageMeta(
+    internship
+      ? internshipMeta(internship)
+      : { title: "Internship | Axiolink Systems (Pvt) Ltd." }
+  );
 
   if (isLoading) {
     return (

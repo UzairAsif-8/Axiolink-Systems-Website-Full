@@ -1,5 +1,6 @@
-const SITE_URL = "https://axiolinksystems.com";
-const ORG_NAME = "Axiolink Systems (Pvt) Ltd.";
+import { SITE_URL, SITE_NAME, SITE_LOGO } from "../seo/siteConfig.js";
+
+const ORG_NAME = SITE_NAME;
 
 export const estimateReadTime = (html = "") => {
   const text = html.replace(/<[^>]+>/g, " ");
@@ -33,7 +34,7 @@ export const buildArticleSchema = (post) => {
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/logoTransparent.png`,
+        url: SITE_LOGO,
       },
     },
     mainEntityOfPage: {

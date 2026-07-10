@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AdminSeo from "./AdminSeo";
 
 const ProtectedAdmin = () => {
   const { user, loading } = useAuth();
@@ -17,7 +18,12 @@ const ProtectedAdmin = () => {
 
   if (!user) return <Navigate to="/admin/login" replace />;
 
-  return <Outlet />;
+  return (
+    <>
+      <AdminSeo />
+      <Outlet />
+    </>
+  );
 };
 
 export default ProtectedAdmin;

@@ -7,10 +7,16 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import toast from "react-hot-toast";
 import Logo from "../../assets/LogoSimple.png";
+import { usePageMeta } from "../../hooks/usePageMeta";
 
 const DEFAULT_ADMIN_EMAIL = "admin@axiolinksystems.com";
 
 const AdminLogin = () => {
+  usePageMeta({
+    title: "Admin Login | Axiolink Systems",
+    noindex: true,
+  });
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState(DEFAULT_ADMIN_EMAIL);

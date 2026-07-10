@@ -14,12 +14,21 @@ import {
   EMPTY_CONTACT_FORM,
   validateContactForm,
 } from "../utils/contactFormValidation";
-
-const SUCCESS_TOAST =
-  "Your message has been sent successfully. We'll get back to you soon.";
-const ERROR_TOAST = "Something went wrong. Please try again.";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../seo/pageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
+import { buildContactPageSchema, buildBreadcrumbSchema } from "../seo/schemas";
 
 const Contact = () => {
+  usePageMeta(PAGE_META.contact);
+  useJsonLd([
+    buildContactPageSchema(),
+    buildBreadcrumbSchema([
+      { name: "Home", href: "/" },
+      { name: "Contact", href: "/contact" },
+    ]),
+  ]);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState(EMPTY_CONTACT_FORM);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -28,6 +37,10 @@ const Contact = () => {
   const formSectionRef = useRef(null);
   const feedbackRef = useRef(null);
   const isSendingRef = useRef(false);
+
+  const SUCCESS_TOAST =
+    "Your message has been sent successfully. We'll get back to you soon.";
+  const ERROR_TOAST = "Something went wrong. Please try again.";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

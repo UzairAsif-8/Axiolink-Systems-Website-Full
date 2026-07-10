@@ -20,6 +20,14 @@ import Button from "../components/ui/Button";
 import ProcessSection from "../components/ProcessSection";
 import { getServiceBySlug, categoryLabels } from "../data/services";
 import { COMPANY_NAME } from "../data/company";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META, serviceMeta } from "../seo/pageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
+import {
+  buildServiceSchema,
+  buildServiceFaqSchema,
+  buildBreadcrumbSchema,
+} from "../seo/schemas";
 
 const benefitIcons = {
   rocket: Rocket,
@@ -34,6 +42,22 @@ const ServiceDetail = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const service = getServiceBySlug(slug);
+
+  usePageMeta(service ? serviceMeta(service) : { title: `Service | ${COMPANY_NAME}` });
+
+  useJsonLd(
+    service
+      ? [
+          buildServiceSchema(service),
+          buildServiceFaqSchema(service),
+          buildBreadcrumbSchema([
+            { name: "Home", href: "/" },
+            { name: "Services", href: "/services" },
+            { name: service.title, href: `/services/${service.slug}` },
+          ]),
+        ]
+      : []
+  );
 
   if (!service) {
     return (
