@@ -2,19 +2,14 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
+import PageLoadGate from "./components/PageLoadGate";
 import ProtectedAdmin from "./admin/components/ProtectedAdmin";
-import AdminSeo from "./admin/components/AdminSeo";
-
-const PageLoader = () => (
-  <div className="min-h-[50vh] flex items-center justify-center" role="status" aria-live="polite">
-    <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
-    <span className="sr-only">Loading page…</span>
-  </div>
-);
 
 const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader />}>
-    <Component />
+  <Suspense fallback={null}>
+    <PageLoadGate>
+      <Component />
+    </PageLoadGate>
   </Suspense>
 );
 
