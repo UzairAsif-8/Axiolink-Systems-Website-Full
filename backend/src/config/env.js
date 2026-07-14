@@ -113,6 +113,24 @@ export const env = {
   // First URL for backward compatibility
   clientUrl: clientUrls[0],
 
+  /**
+   * Auth cookie SameSite. Use "lax" when the frontend same-origin-proxies `/api`
+   * (Vercel rewrite) so mobile browsers keep the session. Use "none" only for
+   * true cross-origin frontend → API (often blocked on mobile).
+   */
+  authCookieSameSite: (() => {
+    const value = process.env.AUTH_COOKIE_SAMESITE?.trim().toLowerCase();
+    if (value === "lax" || value === "strict" || value === "none") return value;
+    return undefined;
+  })(),
+
+  authCookieSecure: (() => {
+    const value = process.env.AUTH_COOKIE_SECURE?.trim().toLowerCase();
+    if (value === "true" || value === "1") return true;
+    if (value === "false" || value === "0") return false;
+    return undefined;
+  })(),
+
   uploadProvider: process.env.UPLOAD_PROVIDER || "local",
 
   cloudinary: {

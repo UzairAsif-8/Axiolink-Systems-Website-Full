@@ -1,21 +1,35 @@
 /**
  * Shared API configuration for all frontend HTTP requests.
  *
- * Set in .env (project root):
- *   VITE_API_URL=https://axiolink-systems-website-full.onrender.com
+ * Production (recommended): same-origin `/api`.
+ * Vercel rewrites `/api/*` → the Render backend so auth cookies are first-party
+ * (required for login on mobile Safari / Chrome, which block third-party cookies).
  *
- * Do NOT include /api or a trailing slash in VITE_API_URL.
+ * Local development:
+ *   - Empty VITE_API_URL → Vite proxies `/api` → http://localhost:4000
+ *   - Or set VITE_API_URL to a remote API (cross-origin cookies; may fail on mobile)
+ *
+ * Escape hatch: VITE_API_SAME_ORIGIN=false forces use of VITE_API_URL in production.
  */
 
 function resolveApiBase() {
+  const forceRemote =
+    import.meta.env.VITE_API_SAME_ORIGIN === "false" ||
+    import.meta.env.VITE_API_SAME_ORIGIN === "0";
+
+  // Prefer same-origin `/api` in production so Set-Cookie is first-party.
+  if (import.meta.env.PROD && !forceRemote) {
+    return "";
+  }
+
   const raw = import.meta.env.VITE_API_URL?.trim() ?? "";
   return raw.replace(/\/$/, "");
 }
 
 export const API_BASE = resolveApiBase();
 
-/** Base path for axios client — `${API_BASE}/api` */
-export const API_ROOT = `${API_BASE}/api`;
+/** Base path for axios client — `/api` when same-origin, else `${API_BASE}/api` */
+export const API_ROOT = API_BASE ? `${API_BASE}/api` : "/api";
 
 /**
  * Build a full API URL.
@@ -32,15 +46,4 @@ export function apiUrl(path = "") {
   }
 
   return segment ? `${API_BASE}/api/${segment}` : `${API_BASE}/api`;
-}
-
-if (!API_BASE) {
-  const hint =
-    "Set VITE_API_URL in .env (e.g. https://axiolink-systems-website-full.onrender.com).";
-
-  if (import.meta.env.DEV) {
-    console.warn(`[Axiolink] VITE_API_URL is missing — ${hint}`);
-  } else {
-    console.error(`[Axiolink] VITE_API_URL is missing — ${hint}`);
-  }
 }

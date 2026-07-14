@@ -10,15 +10,46 @@ function parseDurationToMs(value, fallbackMs) {
   return amount * multipliers[unit];
 }
 
+/**
+ * Cookie attributes for auth JWTs.
+ *
+ * When the frontend calls the API via a same-origin reverse proxy (Vercel `/api`
+ * rewrite), cookies are first-party. Prefer SameSite=Lax in that setup
+ * (AUTH_COOKIE_SAMESITE=lax) — more reliable on mobile than cross-site None.
+ *
+ * Cross-origin (frontend → Render URL directly) needs SameSite=None; Secure,
+ * which many mobile browsers block as a third-party cookie.
+ */
 function baseCookieOptions(maxAgeMs) {
   const isProduction = env.nodeEnv === "production";
+  const sameSite = env.authCookieSameSite || (isProduction ? "none" : "lax");
+  const secure =
+    env.authCookieSecure != null
+      ? env.authCookieSecure
+      : isProduction || sameSite === "none";
 
   return {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure,
+    sameSite,
     path: "/",
     maxAge: maxAgeMs,
+  };
+}
+
+function clearCookieOptions() {
+  const isProduction = env.nodeEnv === "production";
+  const sameSite = env.authCookieSameSite || (isProduction ? "none" : "lax");
+  const secure =
+    env.authCookieSecure != null
+      ? env.authCookieSecure
+      : isProduction || sameSite === "none";
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite,
+    path: "/",
   };
 }
 
@@ -38,14 +69,7 @@ export function setAccessTokenCookie(res, accessToken) {
 }
 
 export function clearAuthCookies(res) {
-  const isProduction = env.nodeEnv === "production";
-  const options = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    path: "/",
-  };
-
+  const options = clearCookieOptions();
   res.clearCookie("accessToken", options);
   res.clearCookie("refreshToken", options);
 }

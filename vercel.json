@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://axiolink-systems-website-full.onrender.com/api/:path*"
+    },
+    {
       "source": "/((?!robots\\.txt|sitemap\\.xml).*)",
       "destination": "/index.html"
     }

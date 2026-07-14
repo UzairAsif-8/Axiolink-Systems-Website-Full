@@ -9,21 +9,41 @@ export const api = axios.create({
 const isAdminPath = (pathname = window.location.pathname) =>
   pathname.startsWith("/admin") && !pathname.startsWith("/admin/login");
 
+const isAuthEndpoint = (url = "") =>
+  url.includes("/auth/login") ||
+  url.includes("/auth/refresh") ||
+  url.includes("/auth/logout");
+
+let refreshPromise = null;
+
+function refreshSession() {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(apiUrl("auth/refresh"), {}, { withCredentials: true })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    const isAuthRoute =
-      original?.url?.includes("/auth/login") ||
-      original?.url?.includes("/auth/refresh") ||
-      original?.url?.includes("/auth/logout") ||
-      original?.url?.includes("/auth/me");
 
-    if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
+    // Retry once on 401 via refresh (including /auth/me session restore).
+    // Do not retry login/refresh/logout themselves.
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._retry &&
+      !isAuthEndpoint(original.url)
+    ) {
       original._retry = true;
 
       try {
-        await axios.post(apiUrl("auth/refresh"), {}, { withCredentials: true });
+        await refreshSession();
         return api(original);
       } catch {
         if (isAdminPath()) {
