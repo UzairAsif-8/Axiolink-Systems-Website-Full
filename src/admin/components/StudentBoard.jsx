@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Award, ChevronRight, GraduationCap, Trash2, UserCheck, Users, UserPlus } from "lucide-react";
 import api from "../api/client";
 import ConfirmDialog from "./ConfirmDialog";
+import PaymentSlipPreview from "./PaymentSlipPreview";
 import StatusBadge from "./StatusBadge";
 import ActiveStudentsPanel from "./ActiveStudentsPanel";
 import {
@@ -74,6 +75,7 @@ const NewEnrollmentsTable = ({ rows, courseId, isPending, onActivate, onWithdraw
             <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden md:table-cell">Course</th>
             <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden sm:table-cell">Enrolled</th>
             <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Payment</th>
+            <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden lg:table-cell">Slip</th>
             <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
           </tr>
         </thead>
@@ -104,6 +106,13 @@ const NewEnrollmentsTable = ({ rows, courseId, isPending, onActivate, onWithdraw
                     <option key={p} value={p}>{getPaymentLabel(p)}</option>
                   ))}
                 </select>
+              </td>
+              <td className="py-3.5 px-4 hidden lg:table-cell">
+                {s.paymentSlipUrl ? (
+                  <PaymentSlipPreview url={s.paymentSlipUrl} compact />
+                ) : (
+                  <span className="text-xs text-slate-400">—</span>
+                )}
               </td>
               <td className="py-3.5 px-4">
                 <div className="flex flex-wrap items-center gap-2">

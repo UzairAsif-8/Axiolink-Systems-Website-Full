@@ -14,6 +14,7 @@ import api from "../api/client";
 import { useAdminData } from "../hooks/useAdminData";
 import StatusBadge from "../components/StatusBadge";
 import Panel from "../components/Panel";
+import PaymentSlipPreview from "../components/PaymentSlipPreview";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -231,6 +232,10 @@ const EnrollmentDetailView = ({ enrollmentId, backTo, onDeleted }) => {
           </div>
         )}
       </div>
+
+      <Panel title="Payment slip">
+        <PaymentSlipPreview url={detail.paymentSlipUrl} />
+      </Panel>
 
       {(detail.status === ACTIVE_STATUS || detail.status === COMPLETED_STATUS) && (
         <Panel title="Learning progress">
