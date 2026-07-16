@@ -5,21 +5,80 @@ import { notifyAdmins } from "../services/audit.service.js";
 import { enrollmentService } from "../services/enrollment.service.js";
 import { uploadFile } from "../services/upload.service.js";
 
-function isMissingColumnError(err) {
-  return err?.code === "P2022";
-}
-
 function isCourseCompletionFieldError(err) {
-  if (isMissingColumnError(err)) return true;
+  if (err?.code === "P2022") return true;
   const msg = String(err?.message || "");
   return (
+    msg.includes("does not exist in the current database") ||
+    msg.includes("column `isCompleted`") ||
+    msg.includes("column `completedAt`") ||
+    msg.includes("column `paymentSlipUrl`") ||
+    msg.includes("column `paymentSlipPublicId`") ||
     msg.includes("Unknown argument `isCompleted`") ||
     msg.includes("Unknown argument `completedAt`") ||
     msg.includes("Unknown arg `isCompleted`") ||
-    msg.includes("Unknown arg `completedAt`") ||
-    msg.includes("Unknown field `isCompleted`") ||
-    msg.includes("Unknown field `completedAt`")
+    msg.includes("Unknown arg `completedAt`")
   );
+}
+
+function stripPaymentSlipFields(data = {}) {
+  const next = { ...data };
+  delete next.paymentSlipUrl;
+  delete next.paymentSlipPublicId;
+  return next;
+}
+
+function buildCourseWriteData(body, slug) {
+  const normalized = normalizeCourseBody(body);
+  return {
+    title: normalized.title,
+    slug,
+    description: normalized.description,
+    category: normalized.category ?? null,
+    instructorId: normalized.instructorId ?? null,
+    duration: normalized.duration ?? null,
+    level: normalized.level ?? null,
+    price: normalized.price ?? null,
+    discount: normalized.discount ?? null,
+    thumbnailUrl: normalized.thumbnailUrl || null,
+    thumbnailPublicId: normalized.thumbnailPublicId ?? null,
+    bannerUrl: normalized.bannerUrl || null,
+    bannerPublicId: normalized.bannerPublicId ?? null,
+    learningOutcomes: normalized.learningOutcomes,
+    requirements: normalized.requirements,
+    certificateAvailable: normalized.certificateAvailable ?? true,
+    enrollmentOpen: normalized.isCompleted ? false : Boolean(normalized.enrollmentOpen),
+    status: normalized.status ?? "DRAFT",
+    seoTitle: normalized.seoTitle ?? null,
+    seoDescription: normalized.seoDescription ?? null,
+    isCompleted: Boolean(normalized.isCompleted),
+    completedAt: normalized.isCompleted
+      ? normalized.completedAt
+        ? new Date(normalized.completedAt)
+        : new Date()
+      : null,
+  };
+}
+
+async function createCourseRecord(data) {
+  try {
+    return await prisma.course.create({ data });
+  } catch (err) {
+    if (!isCourseCompletionFieldError(err)) throw err;
+    return prisma.course.create({ data: stripCourseCompletionFields(data) });
+  }
+}
+
+async function updateCourseRecord(id, data) {
+  try {
+    return await prisma.course.update({ where: { id }, data });
+  } catch (err) {
+    if (!isCourseCompletionFieldError(err)) throw err;
+    return prisma.course.update({
+      where: { id },
+      data: stripCourseCompletionFields(data),
+    });
+  }
 }
 
 function stripCourseCompletionFields(data = {}) {
@@ -111,52 +170,22 @@ export const getById = asyncHandler(async (req, res) => {
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const body = normalizeCourseBody(validate(courseSchema, req.body));
+  const body = validate(courseSchema, req.body);
   const slug = body.slug || slugify(body.title);
-  const createData = {
-    ...body,
-    slug,
-    thumbnailUrl: body.thumbnailUrl || null,
-    bannerUrl: body.bannerUrl || null,
-    completedAt: body.completedAt ? new Date(body.completedAt) : body.isCompleted ? new Date() : null,
-  };
-
-  let item;
-  try {
-    item = await prisma.course.create({ data: createData });
-  } catch (err) {
-    if (!isCourseCompletionFieldError(err)) throw err;
-    item = await prisma.course.create({ data: stripCourseCompletionFields(createData) });
-  }
+  const item = await createCourseRecord(buildCourseWriteData(body, slug));
   success(res, item, 201);
 });
 
 export const update = asyncHandler(async (req, res) => {
-  const body = normalizeCourseBody(validate(courseSchema.partial(), req.body));
-  const updateData = {
-    ...body,
-    ...(body.thumbnailUrl !== undefined && { thumbnailUrl: body.thumbnailUrl || null }),
-    ...(body.bannerUrl !== undefined && { bannerUrl: body.bannerUrl || null }),
-    ...(body.completedAt !== undefined && {
-      completedAt: body.completedAt ? new Date(body.completedAt) : null,
-    }),
-    ...(body.isCompleted === true && !body.completedAt && { completedAt: new Date() }),
-    ...(body.isCompleted === false && { completedAt: null }),
-  };
+  const body = validate(courseSchema.partial(), req.body);
+  const existing = await prisma.course.findFirst({
+    where: { id: req.params.id, deletedAt: null },
+  });
+  if (!existing) throw new ApiError(404, "Course not found");
 
-  let item;
-  try {
-    item = await prisma.course.update({
-      where: { id: req.params.id },
-      data: updateData,
-    });
-  } catch (err) {
-    if (!isCourseCompletionFieldError(err)) throw err;
-    item = await prisma.course.update({
-      where: { id: req.params.id },
-      data: stripCourseCompletionFields(updateData),
-    });
-  }
+  const slug = body.slug || existing.slug;
+  const merged = { ...existing, ...body };
+  const item = await updateCourseRecord(req.params.id, buildCourseWriteData(merged, slug));
   success(res, item);
 });
 
@@ -206,17 +235,25 @@ export const enrollPublic = asyncHandler(async (req, res) => {
 
   const uploaded = await uploadFile(req.file, { folder: "payment-slips", req });
 
-  const enrollment = await prisma.enrollment.create({
-    data: {
-      fullName: body.name,
-      email: body.email,
-      phone: body.phone,
-      courseId: course.id,
-      paymentStatus: "PENDING",
-      paymentSlipUrl: uploaded.url,
-      paymentSlipPublicId: uploaded.publicId,
-    },
-  });
+  const enrollmentData = {
+    fullName: body.name,
+    email: body.email,
+    phone: body.phone,
+    courseId: course.id,
+    paymentStatus: "PENDING",
+    paymentSlipUrl: uploaded.url,
+    paymentSlipPublicId: uploaded.publicId,
+  };
+
+  let enrollment;
+  try {
+    enrollment = await prisma.enrollment.create({ data: enrollmentData });
+  } catch (err) {
+    if (!isCourseCompletionFieldError(err)) throw err;
+    enrollment = await prisma.enrollment.create({
+      data: stripPaymentSlipFields(enrollmentData),
+    });
+  }
 
   await notifyAdmins({
     type: "enrollment",
