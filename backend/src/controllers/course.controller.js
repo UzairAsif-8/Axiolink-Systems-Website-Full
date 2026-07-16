@@ -9,6 +9,19 @@ function isMissingColumnError(err) {
   return err?.code === "P2022";
 }
 
+function isCourseCompletionFieldError(err) {
+  if (isMissingColumnError(err)) return true;
+  const msg = String(err?.message || "");
+  return (
+    msg.includes("Unknown argument `isCompleted`") ||
+    msg.includes("Unknown argument `completedAt`") ||
+    msg.includes("Unknown arg `isCompleted`") ||
+    msg.includes("Unknown arg `completedAt`") ||
+    msg.includes("Unknown field `isCompleted`") ||
+    msg.includes("Unknown field `completedAt`")
+  );
+}
+
 function stripCourseCompletionFields(data = {}) {
   const next = { ...data };
   delete next.isCompleted;
@@ -40,7 +53,7 @@ export const listPublic = asyncHandler(async (_req, res) => {
       orderBy: { title: "asc" },
     });
   } catch (err) {
-    if (!isMissingColumnError(err)) throw err;
+    if (!isCourseCompletionFieldError(err)) throw err;
     data = await prisma.course.findMany({
       where: {
         deletedAt: null,
@@ -65,7 +78,7 @@ export const listPreviousPublic = asyncHandler(async (_req, res) => {
       orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
     });
   } catch (err) {
-    if (!isMissingColumnError(err)) throw err;
+    if (!isCourseCompletionFieldError(err)) throw err;
     data = [];
   }
   success(res, data);
@@ -112,7 +125,7 @@ export const create = asyncHandler(async (req, res) => {
   try {
     item = await prisma.course.create({ data: createData });
   } catch (err) {
-    if (!isMissingColumnError(err)) throw err;
+    if (!isCourseCompletionFieldError(err)) throw err;
     item = await prisma.course.create({ data: stripCourseCompletionFields(createData) });
   }
   success(res, item, 201);
@@ -138,7 +151,7 @@ export const update = asyncHandler(async (req, res) => {
       data: updateData,
     });
   } catch (err) {
-    if (!isMissingColumnError(err)) throw err;
+    if (!isCourseCompletionFieldError(err)) throw err;
     item = await prisma.course.update({
       where: { id: req.params.id },
       data: stripCourseCompletionFields(updateData),
