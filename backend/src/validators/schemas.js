@@ -109,6 +109,13 @@ export const enrollmentSchema = z.object({
   course_title: z.string().optional(),
 });
 
+const optionalNumeric = z.preprocess((val) => {
+  if (val === "" || val === null || val === undefined) return null;
+  if (typeof val === "number" && Number.isNaN(val)) return null;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : null;
+}, z.number().optional().nullable());
+
 export const courseSchema = z.object({
   title: z.string().min(3),
   slug: z.string().optional(),
@@ -117,8 +124,8 @@ export const courseSchema = z.object({
   instructorId: z.string().uuid().optional().nullable(),
   duration: z.string().optional(),
   level: z.string().optional(),
-  price: z.number().optional().nullable(),
-  discount: z.number().optional().nullable(),
+  price: optionalNumeric,
+  discount: optionalNumeric,
   learningOutcomes: z.array(z.string()).optional(),
   requirements: z.array(z.string()).optional(),
   certificateAvailable: z.boolean().optional(),

@@ -62,7 +62,13 @@ const CourseForm = () => {
       qc.invalidateQueries({ queryKey: ["admin-courses"] });
       navigate("/admin/courses");
     },
-    onError: (err) => toast.error(err.response?.data?.message || "Save failed"),
+    onError: (err) => {
+      const details = err.response?.data?.errors;
+      const detailMsg = Array.isArray(details) && details.length
+        ? details.map((e) => e.message).join("; ")
+        : null;
+      toast.error(detailMsg || err.response?.data?.message || "Save failed");
+    },
   });
 
   const deleteMut = useMutation({
@@ -77,8 +83,16 @@ const CourseForm = () => {
 
   const onSubmit = (data) => {
     const completed = Boolean(data.isCompleted);
+    const price = Number.isFinite(data.price) ? data.price : null;
     saveMut.mutate({
-      ...data,
+      title: data.title,
+      slug: data.slug?.trim() || undefined,
+      description: data.description,
+      category: data.category?.trim() || undefined,
+      duration: data.duration?.trim() || undefined,
+      level: data.level?.trim() || undefined,
+      price,
+      status: data.status,
       thumbnailUrl: thumbnailUrl || null,
       thumbnailPublicId: thumbnailPublicId || null,
       enrollmentOpen: completed ? false : Boolean(data.enrollmentOpen),
