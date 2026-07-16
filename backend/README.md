@@ -185,7 +185,23 @@ All significant admin actions are logged to `AuditLog`:
 - [ ] Strong JWT secrets (32+ random characters)
 - [ ] Neon DATABASE_URL with SSL
 - [ ] ADMIN_PASSWORD_HASH from strong password
-- [ ] `npx prisma migrate deploy`
-- [ ] `npm run seed`
+- [ ] Render **Pre-Deploy Command**: `npx prisma migrate deploy` (run once per deploy — not in Build or Start)
+- [ ] Render **Start Command**: `npm start` (starts the server only)
+- [ ] `npm run seed` (one-time or when seed data changes)
 - [ ] Cloudinary configured
 - [ ] CLIENT_URL set to production frontend URL
+
+---
+
+## Render deployment
+
+Run Prisma migrations **once** per deploy using Render's pre-deploy step. Do not run `prisma migrate deploy` in both the build and start commands — that causes PostgreSQL advisory lock timeouts (`P1002`).
+
+| Render setting | Recommended value |
+|----------------|-------------------|
+| Root Directory | `backend` (if repo includes frontend) |
+| Build Command | `npm install` |
+| Pre-Deploy Command | `npx prisma migrate deploy` |
+| Start Command | `npm start` |
+
+`postinstall` runs `prisma generate` after `npm install`, so the Prisma Client is ready before the app starts. See `render.yaml` for a blueprint example.

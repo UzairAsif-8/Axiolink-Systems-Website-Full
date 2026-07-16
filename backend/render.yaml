@@ -1,0 +1,19 @@
+# Render Blueprint — backend web service
+# https://render.com/docs/deploy-prisma-orm
+#
+# If you manage the service manually in the Render dashboard instead of
+# using this blueprint, apply the same build / pre-deploy / start commands.
+
+services:
+  - type: web
+    name: axiolink-backend
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    preDeployCommand: npx prisma migrate deploy
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
