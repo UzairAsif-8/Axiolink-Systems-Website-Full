@@ -1,6 +1,9 @@
-/** Certificate code pattern: XXXX-XX-XXXX-XXX (13 alphanumeric chars). */
-export const CERT_CODE_RAW_LENGTH = 13;
-export const CERT_CODE_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{2}-[A-Z0-9]{4}-[A-Z0-9]{3}$/;
+/** Certificate code pattern: XXXX-XX-XXXX-XXXX-XXX (17 alphanumeric chars). */
+export const CERT_CODE_RAW_LENGTH = 17;
+export const CERT_CODE_PATTERN =
+  /^[A-Z0-9]{4}-[A-Z0-9]{2}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{3}$/;
+
+const SEGMENTS = [4, 2, 4, 4, 3];
 
 export function stripCertificateCode(value, { maxLength = CERT_CODE_RAW_LENGTH } = {}) {
   const cleaned = String(value || "")
@@ -12,11 +15,14 @@ export function stripCertificateCode(value, { maxLength = CERT_CODE_RAW_LENGTH }
 export function formatCertificateCode(value) {
   const raw = stripCertificateCode(value);
   if (!raw) return "";
+
   const parts = [];
-  if (raw.length > 0) parts.push(raw.slice(0, 4));
-  if (raw.length > 4) parts.push(raw.slice(4, 6));
-  if (raw.length > 6) parts.push(raw.slice(6, 10));
-  if (raw.length > 10) parts.push(raw.slice(10, 13));
+  let offset = 0;
+  for (const len of SEGMENTS) {
+    if (raw.length <= offset) break;
+    parts.push(raw.slice(offset, offset + len));
+    offset += len;
+  }
   return parts.join("-");
 }
 

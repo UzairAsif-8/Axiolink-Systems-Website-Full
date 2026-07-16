@@ -9,9 +9,9 @@ import {
 
 function generateCertificateCode() {
   const year = String(new Date().getFullYear());
-  // 13 alphanumeric chars → XXXX-XX-XXXX-XXX
-  const rand = Math.random().toString(36).substring(2, 11).toUpperCase().padEnd(9, "0");
-  return formatCertificateCode(`AX${year}${rand}`.slice(0, 13));
+  // 17 alphanumeric chars → XXXX-XX-XXXX-XXXX-XXX
+  const rand = Math.random().toString(36).substring(2, 15).toUpperCase().padEnd(13, "0");
+  return formatCertificateCode(`AX${year}${rand}`.slice(0, 17));
 }
 
 function generateCertificateNumber() {

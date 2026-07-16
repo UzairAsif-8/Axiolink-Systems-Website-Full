@@ -201,7 +201,7 @@ export function listCertificates(query = {}) {
 
 export function createCertificate(body) {
   const data = loadDemoData();
-  const fallback = `BP26${String(2000 + data.certificates.length).padStart(9, "0")}`.slice(0, 13);
+  const fallback = `BP26${String(2000 + data.certificates.length).padStart(13, "0")}`.slice(0, 17);
   const code =
     formatCertificateCode(body.certificateCode || fallback) ||
     formatCertificateCode(fallback);

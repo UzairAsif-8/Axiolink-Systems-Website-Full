@@ -1,9 +1,13 @@
-/** Certificate code pattern: XXXX-XX-XXXX-XXX (13 alphanumeric chars). */
-export const CERT_CODE_PLACEHOLDER = "XXXX-XX-XXXX-XXX";
-export const CERT_CODE_RAW_LENGTH = 13;
-export const CERT_CODE_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{2}-[A-Z0-9]{4}-[A-Z0-9]{3}$/;
+/** Certificate code pattern: XXXX-XX-XXXX-XXXX-XXX (17 alphanumeric chars). */
+export const CERT_CODE_PLACEHOLDER = "XXXX-XX-XXXX-XXXX-XXX";
+export const CERT_CODE_RAW_LENGTH = 17;
+export const CERT_CODE_PATTERN =
+  /^[A-Z0-9]{4}-[A-Z0-9]{2}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{3}$/;
 
-/** Strip to uppercase alphanumeric (optionally capped at 13 for input). */
+/** Group lengths for XXXX-XX-XXXX-XXXX-XXX */
+const SEGMENTS = [4, 2, 4, 4, 3];
+
+/** Strip to uppercase alphanumeric (optionally capped for input). */
 export function stripCertificateCode(value, { maxLength = CERT_CODE_RAW_LENGTH } = {}) {
   const cleaned = String(value || "")
     .replace(/[^a-zA-Z0-9]/g, "")
@@ -12,20 +16,24 @@ export function stripCertificateCode(value, { maxLength = CERT_CODE_RAW_LENGTH }
 }
 
 /**
- * Auto-format to XXXX-XX-XXXX-XXX as the user types.
- * Accepts input with or without dashes. Caps at 13 body chars.
+ * Auto-format to XXXX-XX-XXXX-XXXX-XXX as the user types.
+ * Accepts input with or without dashes. Caps at 17 body chars.
  */
 export function formatCertificateCode(value) {
   const raw = stripCertificateCode(value);
+  if (!raw) return "";
+
   const parts = [];
-  if (raw.length > 0) parts.push(raw.slice(0, 4));
-  if (raw.length > 4) parts.push(raw.slice(4, 6));
-  if (raw.length > 6) parts.push(raw.slice(6, 10));
-  if (raw.length > 10) parts.push(raw.slice(10, 13));
+  let offset = 0;
+  for (const len of SEGMENTS) {
+    if (raw.length <= offset) break;
+    parts.push(raw.slice(offset, offset + len));
+    offset += len;
+  }
   return parts.join("-");
 }
 
-/** Display helper — formats standard 13-char codes; leaves legacy codes intact. */
+/** Display helper — formats standard 17-char codes; leaves legacy codes intact. */
 export function displayCertificateCode(value) {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
@@ -35,7 +43,7 @@ export function displayCertificateCode(value) {
   return trimmed.toUpperCase();
 }
 
-/** True when the code has a full 13-character body (with or without dashes). */
+/** True when the code has a full 17-character body (with or without dashes). */
 export function isCompleteCertificateCode(value) {
   return stripCertificateCode(value).length === CERT_CODE_RAW_LENGTH;
 }
