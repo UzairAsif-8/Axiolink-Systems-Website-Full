@@ -3,11 +3,11 @@ import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Briefcase, Sparkles, X } from "lucide-react";
+import { ArrowRight, Briefcase, GraduationCap, Sparkles, X } from "lucide-react";
 import { fetchPublicSettings } from "../api/public";
 
 const SHOW_DELAY_MS = 1200;
-const POPUP_STACK_ORDER = ["jobs", "internships"];
+const POPUP_STACK_ORDER = ["jobs", "internships", "courses"];
 
 const POPUP_CONFIG = {
   internships: {
@@ -20,6 +20,7 @@ const POPUP_CONFIG = {
     iconBg: "bg-primary-100 text-primary-600",
     badge: "Hiring interns",
     enabledAtKey: "internshipsEnabledAt",
+    Icon: Briefcase,
   },
   jobs: {
     title: "Jobs Are Open!",
@@ -31,6 +32,19 @@ const POPUP_CONFIG = {
     iconBg: "bg-navy-100 text-navy-600",
     badge: "Now hiring",
     enabledAtKey: "jobsEnabledAt",
+    Icon: Briefcase,
+  },
+  courses: {
+    title: "New Courses Are Open!",
+    message: "Enroll in the latest Buland Parwaz programs — seats are limited.",
+    cta: "View Courses",
+    href: "/buland-parwaz#courses",
+    accent: "from-violet-500 via-primary-600 to-indigo-500",
+    glow: "shadow-violet-500/30",
+    iconBg: "bg-violet-100 text-violet-600",
+    badge: "New programs",
+    enabledAtKey: "coursesEnabledAt",
+    Icon: GraduationCap,
   },
 };
 
@@ -52,6 +66,7 @@ function isPopupEnabled(type, popups) {
 
 function PopupCard({ type, onDismiss, stackIndex = 0 }) {
   const config = POPUP_CONFIG[type];
+  const Icon = config.Icon;
 
   return (
     <motion.div
@@ -92,7 +107,7 @@ function PopupCard({ type, onDismiss, stackIndex = 0 }) {
             animate={{ rotate: [0, -4, 4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Briefcase className="h-5 w-5" />
+            <Icon className="h-5 w-5" />
           </motion.div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
             <motion.span
@@ -166,8 +181,10 @@ const RecruitmentOpenPopup = () => {
     isAdmin,
     popups.internships,
     popups.jobs,
+    popups.courses,
     popups.internshipsEnabledAt,
     popups.jobsEnabledAt,
+    popups.coursesEnabledAt,
     location.pathname,
   ]);
 

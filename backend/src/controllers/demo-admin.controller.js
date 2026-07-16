@@ -1,5 +1,7 @@
+import path from "path";
 import { asyncHandler, success, paginated, ApiError } from "../utils/helpers.js";
 import * as demo from "../services/demo-data.service.js";
+import { getLocalFileUrl } from "../middleware/upload.js";
 
 export const getStats = asyncHandler(async (_req, res) => {
   const { stats, recentApplications, recentEnrollments, recentMessages } = demo.getDashboard();
@@ -295,6 +297,44 @@ export const getPublicInternshipBySlug = asyncHandler(async (req, res) => {
 
 export const listPublicCourses = asyncHandler(async (_req, res) => {
   success(res, demo.listPublicCourses());
+});
+
+export const listPublicPreviousCourses = asyncHandler(async (_req, res) => {
+  success(res, demo.listPublicPreviousCourses());
+});
+
+export const enrollPublic = asyncHandler(async (req, res) => {
+  let raw = {};
+  if (req.body.enrollment) {
+    raw = typeof req.body.enrollment === "string" ? JSON.parse(req.body.enrollment) : req.body.enrollment;
+  } else {
+    raw = req.body;
+  }
+
+  if (!req.file) {
+    throw new ApiError(400, "Payment slip is required to complete enrollment");
+  }
+
+  const paymentSlipUrl = getLocalFileUrl(path.basename(req.file.path), req);
+  const result = demo.createPublicEnrollment({
+    name: raw.name,
+    email: raw.email,
+    phone: raw.phone,
+    courseSlug: raw.courseSlug || raw.course_id,
+    paymentSlipUrl,
+  });
+
+  if (result.error) throw new ApiError(result.error === "Course not found" ? 404 : 400, result.error);
+
+  success(
+    res,
+    {
+      id: result.enrollment.id,
+      message:
+        "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
+    },
+    201
+  );
 });
 
 export const getPublicCourseBySlug = asyncHandler(async (req, res) => {

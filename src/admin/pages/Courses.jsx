@@ -9,6 +9,7 @@ import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
 import EmptyState from "../components/EmptyState";
 import ConfirmDialog from "../components/ConfirmDialog";
+import RecruitmentPopupToggle from "../components/RecruitmentPopupToggle";
 import Button from "../../components/ui/Button";
 import toast from "react-hot-toast";
 
@@ -50,6 +51,7 @@ const CoursesAdmin = () => {
           </Link>
         }
       />
+      <RecruitmentPopupToggle type="courses" label="Courses" />
       {isError && <p className="text-sm text-red-600 mb-4">Failed to load courses.</p>}
 
       {!isLoading && (data || []).length === 0 ? (
@@ -79,6 +81,11 @@ const CoursesAdmin = () => {
                   <div>
                     <Link to={`/admin/courses/${c.id}`} className="font-semibold text-slate-900 hover:text-blue-600">{c.title}</Link>
                     <p className="text-sm text-slate-500">{c.category}</p>
+                    {c.isCompleted && (
+                      <span className="inline-block mt-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+                        Completed — shown in Previous Courses
+                      </span>
+                    )}
                   </div>
                   <StatusBadge status={c.status} />
                 </div>

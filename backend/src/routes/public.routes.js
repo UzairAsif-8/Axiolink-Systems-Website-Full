@@ -4,7 +4,7 @@ import * as course from "../controllers/course.controller.js";
 import * as certificate from "../controllers/certificate.controller.js";
 import { authenticate } from "../middleware/auth.js";
 import { canAccessAdmin } from "../middleware/roles.js";
-import { uploadImage } from "../middleware/upload.js";
+import { uploadImage, uploadDocument } from "../middleware/upload.js";
 
 export const messagePublic = Router();
 messagePublic.post("/contact", message.submitPublic);
@@ -18,8 +18,9 @@ messageAdmin.delete("/:id", message.remove);
 
 export const coursePublic = Router();
 coursePublic.get("/", course.listPublic);
+coursePublic.get("/previous", course.listPreviousPublic);
 coursePublic.get("/:slug", course.getBySlugPublic);
-coursePublic.post("/enroll", course.enrollPublic);
+coursePublic.post("/enroll", uploadDocument, course.enrollPublic);
 
 export const courseAdmin = Router();
 courseAdmin.use(authenticate, canAccessAdmin);

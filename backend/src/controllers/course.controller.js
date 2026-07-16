@@ -5,10 +5,38 @@ import { notifyAdmins } from "../services/audit.service.js";
 import { enrollmentService } from "../services/enrollment.service.js";
 import { uploadFile } from "../services/upload.service.js";
 
+function normalizeCourseBody(body) {
+  const next = { ...body };
+  if (next.isCompleted) {
+    next.enrollmentOpen = false;
+    if (!next.completedAt) next.completedAt = new Date();
+  } else if (next.isCompleted === false) {
+    next.completedAt = null;
+  }
+  return next;
+}
+
 export const listPublic = asyncHandler(async (_req, res) => {
   const data = await prisma.course.findMany({
-    where: { deletedAt: null, status: "PUBLISHED", enrollmentOpen: true },
+    where: {
+      deletedAt: null,
+      status: "PUBLISHED",
+      enrollmentOpen: true,
+      isCompleted: false,
+    },
     orderBy: { title: "asc" },
+  });
+  success(res, data);
+});
+
+export const listPreviousPublic = asyncHandler(async (_req, res) => {
+  const data = await prisma.course.findMany({
+    where: {
+      deletedAt: null,
+      status: "PUBLISHED",
+      isCompleted: true,
+    },
+    orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
   });
   success(res, data);
 });
@@ -40,7 +68,7 @@ export const getById = asyncHandler(async (req, res) => {
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const body = validate(courseSchema, req.body);
+  const body = normalizeCourseBody(validate(courseSchema, req.body));
   const slug = body.slug || slugify(body.title);
   const item = await prisma.course.create({
     data: {
@@ -48,19 +76,25 @@ export const create = asyncHandler(async (req, res) => {
       slug,
       thumbnailUrl: body.thumbnailUrl || null,
       bannerUrl: body.bannerUrl || null,
+      completedAt: body.completedAt ? new Date(body.completedAt) : body.isCompleted ? new Date() : null,
     },
   });
   success(res, item, 201);
 });
 
 export const update = asyncHandler(async (req, res) => {
-  const body = validate(courseSchema.partial(), req.body);
+  const body = normalizeCourseBody(validate(courseSchema.partial(), req.body));
   const item = await prisma.course.update({
     where: { id: req.params.id },
     data: {
       ...body,
       ...(body.thumbnailUrl !== undefined && { thumbnailUrl: body.thumbnailUrl || null }),
       ...(body.bannerUrl !== undefined && { bannerUrl: body.bannerUrl || null }),
+      ...(body.completedAt !== undefined && {
+        completedAt: body.completedAt ? new Date(body.completedAt) : null,
+      }),
+      ...(body.isCompleted === true && !body.completedAt && { completedAt: new Date() }),
+      ...(body.isCompleted === false && { completedAt: null }),
     },
   });
   success(res, item);
@@ -84,32 +118,62 @@ export const remove = asyncHandler(async (req, res) => {
 });
 
 export const enrollPublic = asyncHandler(async (req, res) => {
-  const body = validate(enrollmentSchema, req.body);
+  let raw = {};
+  if (req.body.enrollment) {
+    raw = typeof req.body.enrollment === "string" ? JSON.parse(req.body.enrollment) : req.body.enrollment;
+  } else {
+    raw = req.body;
+  }
+
+  const body = validate(enrollmentSchema, raw);
+  const slug = body.courseSlug || body.course_id;
+
+  if (!req.file) {
+    throw new ApiError(400, "Payment slip is required to complete enrollment");
+  }
 
   let course = null;
   if (body.courseId) {
     course = await prisma.course.findFirst({ where: { id: body.courseId, deletedAt: null } });
-  } else if (body.courseSlug) {
-    course = await prisma.course.findFirst({ where: { slug: body.courseSlug, deletedAt: null } });
+  } else if (slug) {
+    course = await prisma.course.findFirst({ where: { slug, deletedAt: null } });
   }
+
+  if (!course) throw new ApiError(404, "Course not found");
+  if (course.isCompleted || !course.enrollmentOpen) {
+    throw new ApiError(400, "Enrollment is closed for this course");
+  }
+
+  const uploaded = await uploadFile(req.file, { folder: "payment-slips", req });
 
   const enrollment = await prisma.enrollment.create({
     data: {
       fullName: body.name,
       email: body.email,
       phone: body.phone,
-      courseId: course?.id || (await prisma.course.findFirst({ where: { deletedAt: null } }))?.id,
+      courseId: course.id,
+      paymentStatus: "PENDING",
+      paymentSlipUrl: uploaded.url,
+      paymentSlipPublicId: uploaded.publicId,
     },
   });
 
   await notifyAdmins({
     type: "enrollment",
     title: "New course enrollment",
-    message: `${body.name} enrolled in ${course?.title || body.course_title || "a course"}`,
+    message: `${body.name} enrolled in ${course.title} (payment slip uploaded)`,
     link: `/admin/students/${enrollment.id}`,
   });
 
-  success(res, { id: enrollment.id, message: "Enrollment submitted" }, 201);
+  success(
+    res,
+    {
+      id: enrollment.id,
+      message:
+        "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
+    },
+    201
+  );
 });
 
 export const listEnrollments = asyncHandler(async (req, res) => {

@@ -21,9 +21,16 @@ const CourseForm = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [thumbnailPublicId, setThumbnailPublicId] = useState(null);
-  const { register, handleSubmit, reset } = useForm({
-    defaultValues: { status: "DRAFT", enrollmentOpen: false, certificateAvailable: true },
+  const { register, handleSubmit, reset, watch } = useForm({
+    defaultValues: {
+      status: "DRAFT",
+      enrollmentOpen: false,
+      certificateAvailable: true,
+      isCompleted: false,
+    },
   });
+
+  const isCompleted = watch("isCompleted");
 
   const { data: item } = useQuery({
     queryKey: ["course", id],
@@ -40,6 +47,7 @@ const CourseForm = () => {
         ...item,
         enrollmentOpen: Boolean(item.enrollmentOpen),
         certificateAvailable: item.certificateAvailable !== false,
+        isCompleted: Boolean(item.isCompleted),
       });
       setThumbnailUrl(item.thumbnailUrl || null);
       setThumbnailPublicId(item.thumbnailPublicId || null);
@@ -68,12 +76,15 @@ const CourseForm = () => {
   });
 
   const onSubmit = (data) => {
+    const completed = Boolean(data.isCompleted);
     saveMut.mutate({
       ...data,
       thumbnailUrl: thumbnailUrl || null,
       thumbnailPublicId: thumbnailPublicId || null,
-      enrollmentOpen: Boolean(data.enrollmentOpen),
+      enrollmentOpen: completed ? false : Boolean(data.enrollmentOpen),
       certificateAvailable: Boolean(data.certificateAvailable),
+      isCompleted: completed,
+      ...(completed && !item?.completedAt ? { completedAt: new Date().toISOString() } : {}),
     });
   };
 
@@ -108,13 +119,28 @@ const CourseForm = () => {
           </div>
         </div>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" {...register("enrollmentOpen")} />
+          <input type="checkbox" {...register("enrollmentOpen")} disabled={isCompleted} />
           Enrollment open
+          {isCompleted && (
+            <span className="text-slate-400 text-xs">(closed when course is completed)</span>
+          )}
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" {...register("certificateAvailable")} />
           Certificate available
         </label>
+        <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4">
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" {...register("isCompleted")} className="mt-0.5" />
+            <span>
+              <span className="font-medium text-slate-900">Mark course as completed</span>
+              <span className="block text-slate-600 mt-1">
+                Moves this course to the &ldquo;Previous Courses&rdquo; section on the Buland Parwaz
+                page and closes enrollment.
+              </span>
+            </span>
+          </label>
+        </div>
         <div className="flex gap-3 pt-4">
           <Button type="submit" loading={saveMut.isPending}>Save</Button>
           <Button type="button" variant="secondary" onClick={() => navigate("/admin/courses")}>Cancel</Button>

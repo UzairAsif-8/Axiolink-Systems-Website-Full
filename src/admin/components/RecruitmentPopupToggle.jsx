@@ -5,7 +5,7 @@ import api from "../api/client";
 import { useAdminData } from "../hooks/useAdminData";
 import toast from "react-hot-toast";
 
-const DEFAULT_POPUPS = { internships: false, jobs: false };
+const DEFAULT_POPUPS = { internships: false, jobs: false, courses: false };
 
 const RecruitmentPopupToggle = ({ type, label }) => {
   const qc = useQueryClient();
@@ -21,10 +21,10 @@ const RecruitmentPopupToggle = ({ type, label }) => {
   }, [settings]);
 
   const enabled = popups[type] === true;
+  const enabledAtKey = `${type}EnabledAt`;
 
   const toggleMut = useMutation({
     mutationFn: async (next) => {
-      const enabledAtKey = type === "internships" ? "internshipsEnabledAt" : "jobsEnabledAt";
       await api.put("/admin/settings/bulk", {
         recruitment_popups: {
           ...popups,
@@ -51,7 +51,7 @@ const RecruitmentPopupToggle = ({ type, label }) => {
           <div>
             <h3 className="text-sm font-semibold text-slate-900">Website popup — {label}</h3>
             <p className="mt-0.5 text-sm text-slate-500">
-              Show an animated bottom-right alert on the public site: &ldquo;{label} are open — apply now&rdquo;
+              Show an animated bottom-right alert on the public site when new {label.toLowerCase()} are open.
             </p>
           </div>
         </div>

@@ -4,12 +4,22 @@ import { CheckCircle, Send } from "lucide-react";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import FileDropzone from "../careers/FileDropzone";
 import { submitEnrollment } from "../../api/enrollment";
 import { SITE_CONTACT } from "../../data/siteContact";
 import { scrollToRef } from "../../utils/scrollTo";
 
+const PAYMENT_ACCEPT = {
+  "application/pdf": [".pdf"],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
+  "image/webp": [".webp"],
+};
+
 const EnrollmentForm = ({ course }) => {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [paymentSlip, setPaymentSlip] = useState(null);
+  const [paymentError, setPaymentError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -21,18 +31,26 @@ const EnrollmentForm = ({ course }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!paymentSlip) {
+      setPaymentError("Payment slip is required");
+      return;
+    }
+    if (paymentError) return;
+
     setLoading(true);
     setError("");
+    setPaymentError("");
 
     try {
       await submitEnrollment({
         ...form,
-        course_id: course.id,
-        course_title: course.title,
+        courseSlug: course.id,
+        courseTitle: course.title,
+        paymentSlip,
       });
       setSubmitted(true);
-    } catch {
-      setError("Unable to submit enrollment. Please try again.");
+    } catch (err) {
+      setError(err.message || "Unable to submit enrollment. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -57,12 +75,13 @@ const EnrollmentForm = ({ course }) => {
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-            Enrollment Submitted
+            Response Recorded
           </h3>
-          <p className="text-neutral-600">
-            Thank you, {form.name}! We&apos;ve received your application for{" "}
-            <span className="font-medium">{course.title}</span>. Our team will
-            contact you shortly.
+          <p className="text-neutral-600 leading-relaxed">
+            Thank you, {form.name}! Your enrollment for{" "}
+            <span className="font-medium">{course.title}</span> and payment slip have
+            been received. You will receive a confirmation email once your payment is
+            verified by our team.
           </p>
         </Card>
       </motion.div>
@@ -75,7 +94,7 @@ const EnrollmentForm = ({ course }) => {
         Enroll in This Course
       </h3>
       <p className="text-neutral-600 mb-6">
-        Fill in your details to apply for{" "}
+        Fill in your details and upload your payment slip to apply for{" "}
         <span className="font-medium text-neutral-900">{course.title}</span>.
       </p>
 
@@ -106,6 +125,21 @@ const EnrollmentForm = ({ course }) => {
           onChange={handleChange}
         />
 
+        <FileDropzone
+          label="Payment Slip"
+          required
+          accept={PAYMENT_ACCEPT}
+          value={paymentSlip}
+          onChange={(file, err) => {
+            setPaymentSlip(file);
+            setPaymentError(err || (file ? "" : "Payment slip is required"));
+          }}
+          error={paymentError}
+          emptyText="Upload your payment slip (required)"
+          emptyHint="PDF or image, max 5MB"
+          helperText="PDF or image (JPG, PNG), max 5MB · Required"
+        />
+
         {error && (
           <p ref={messageRef} role="alert" className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg border border-red-100">
             {error}
@@ -117,10 +151,10 @@ const EnrollmentForm = ({ course }) => {
           size="lg"
           className="w-full"
           loading={loading}
-          disabled={loading}
+          disabled={loading || !paymentSlip}
         >
           {!loading && <Send className="mr-2 w-5 h-5" />}
-          Enroll in This Course
+          Submit Enrollment
         </Button>
       </form>
     </Card>

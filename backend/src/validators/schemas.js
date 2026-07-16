@@ -105,6 +105,7 @@ export const enrollmentSchema = z.object({
   phone: z.string().optional(),
   courseId: z.string().optional(),
   courseSlug: z.string().optional(),
+  course_id: z.string().optional(),
   course_title: z.string().optional(),
 });
 
@@ -122,6 +123,8 @@ export const courseSchema = z.object({
   requirements: z.array(z.string()).optional(),
   certificateAvailable: z.boolean().optional(),
   enrollmentOpen: z.boolean().optional(),
+  isCompleted: z.boolean().optional(),
+  completedAt: z.string().datetime().optional().nullable(),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
   thumbnailUrl: z.union([z.string().url(), z.literal(""), z.null()]).optional(),
   thumbnailPublicId: z.string().optional().nullable(),

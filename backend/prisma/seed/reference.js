@@ -28,6 +28,7 @@ const defaultSettings = [
     value: {
       internships: false,
       jobs: false,
+      courses: false,
     },
   },
 ];

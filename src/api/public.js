@@ -11,6 +11,11 @@ export async function fetchPublicCourses() {
   return parseJson(res);
 }
 
+export async function fetchPublicPreviousCourses() {
+  const res = await fetch(apiUrl("courses/previous"));
+  return parseJson(res);
+}
+
 export async function fetchPublicCourseBySlug(slug) {
   const res = await fetch(apiUrl(`courses/${slug}`));
   return parseJson(res);

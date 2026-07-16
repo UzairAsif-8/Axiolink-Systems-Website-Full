@@ -460,6 +460,8 @@ model Course {
   faqs                Json?
   certificateAvailable Boolean      @default(true)
   enrollmentOpen      Boolean       @default(true)
+  isCompleted         Boolean       @default(false)
+  completedAt         DateTime?
   status              ContentStatus @default(DRAFT)
   seoTitle            String?
   seoDescription      String?
@@ -508,6 +510,8 @@ model Enrollment {
   completedAt         DateTime?
   withdrawnAt         DateTime?
   paymentStatus       PaymentStatus    @default(PENDING)
+  paymentSlipUrl      String?
+  paymentSlipPublicId String?
   attendance          Int              @default(0)
   progress            Int              @default(0)
   progressPercentage  Int              @default(0)

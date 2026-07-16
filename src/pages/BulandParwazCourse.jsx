@@ -35,7 +35,7 @@ const mapApiCourseDetail = (c) => ({
   category: c.category,
   shortDescription: typeof c.description === "string" ? c.description.slice(0, 220) : "",
   fullDescription: c.description,
-  status: c.enrollmentOpen !== false ? "live" : "closed",
+  status: c.isCompleted ? "completed" : c.enrollmentOpen !== false ? "live" : "closed",
   duration: c.duration,
   level: c.level,
   outcomes: c.learningOutcomes || [],

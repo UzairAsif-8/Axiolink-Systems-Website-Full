@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { ArrowRight, GraduationCap, ShieldCheck } from "lucide-react";
+import { ArrowRight, GraduationCap, History, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import Button from "../components/ui/Button";
 import CourseCard from "../components/buland-parwaz/CourseCard";
 import BulandParwazHero from "../components/buland-parwaz/BulandParwazHero";
 import BulandParwazPillars from "../components/buland-parwaz/BulandParwazPillars";
-import { fetchPublicCourses } from "../api/public";
+import { fetchPublicCourses, fetchPublicPreviousCourses } from "../api/public";
 import { getCourseDisplayImage } from "../utils/courseImages";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../seo/pageMeta";
@@ -20,7 +20,7 @@ const mapApiCourse = (c) => ({
   category: c.category,
   shortDescription: typeof c.description === "string" ? c.description.slice(0, 220) : "",
   fullDescription: c.description,
-  status: c.enrollmentOpen !== false ? "live" : "closed",
+  status: c.isCompleted ? "completed" : c.enrollmentOpen !== false ? "live" : "closed",
   duration: c.duration,
   level: c.level,
 });
@@ -28,7 +28,9 @@ const mapApiCourse = (c) => ({
 const BulandParwaz = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [previousCourses, setPreviousCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPrevious, setLoadingPrevious] = useState(true);
 
   usePageMeta(PAGE_META.bulandParwaz);
 
@@ -37,6 +39,13 @@ const BulandParwaz = () => {
       .then((data) => setCourses((Array.isArray(data) ? data : []).map(mapApiCourse)))
       .catch(() => setCourses([]))
       .finally(() => setLoading(false));
+
+    fetchPublicPreviousCourses()
+      .then((data) =>
+        setPreviousCourses((Array.isArray(data) ? data : []).map(mapApiCourse))
+      )
+      .catch(() => setPreviousCourses([]))
+      .finally(() => setLoadingPrevious(false));
   }, []);
 
   const scrollToCourses = useCallback(() => {
@@ -107,6 +116,53 @@ const BulandParwaz = () => {
           </div>
         </div>
       </section>
+
+      {(loadingPrevious || previousCourses.length > 0) && (
+        <section id="previous-courses" className="section-padding bg-neutral-50 scroll-mt-24 border-t border-neutral-100">
+          <div className="container-custom">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-14">
+                <div className="max-w-2xl">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-neutral-500 mb-3 flex items-center gap-2">
+                    <History className="w-4 h-4" />
+                    Archive
+                  </p>
+                  <h2 className="text-3xl md:text-4xl font-display font-bold text-neutral-900 mb-4">
+                    Previous Courses
+                  </h2>
+                  <p className="text-lg text-neutral-600 leading-relaxed">
+                    Programs that have successfully concluded. View details and outcomes
+                    from past cohorts.
+                  </p>
+                </div>
+                {!loadingPrevious && previousCourses.length > 0 && (
+                  <p className="text-sm font-medium text-neutral-500 shrink-0">
+                    {previousCourses.length} completed program
+                    {previousCourses.length !== 1 ? "s" : ""}
+                  </p>
+                )}
+              </div>
+
+              {loadingPrevious ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="h-[420px] rounded-xl bg-neutral-200/60 animate-pulse border border-neutral-200/60"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {previousCourses.map((course, index) => (
+                    <CourseCard key={course.id} course={course} index={index} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section-padding bg-gradient-to-br from-primary-600 via-primary-700 to-navy-700">
         <div className="container-custom">

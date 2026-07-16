@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as demo from "../controllers/demo-admin.controller.js";
 import { authenticate } from "../middleware/auth.js";
 import { canAccessAdmin } from "../middleware/roles.js";
+import { uploadDocument } from "../middleware/upload.js";
 
 const admin = Router();
 admin.use(authenticate, canAccessAdmin);
@@ -67,6 +68,8 @@ export const demoPublicRoutes = {
   courses: (() => {
     const r = Router();
     r.get("/", demo.listPublicCourses);
+    r.get("/previous", demo.listPublicPreviousCourses);
+    r.post("/enroll", uploadDocument, demo.enrollPublic);
     r.get("/:slug", demo.getPublicCourseBySlug);
     return r;
   })(),

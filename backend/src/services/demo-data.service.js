@@ -316,7 +316,19 @@ export function getPublicInternshipBySlug(slug) {
 }
 
 export function listPublicCourses() {
-  return clone(loadDemoData().courses.filter((c) => c.status === "PUBLISHED" && c.enrollmentOpen !== false));
+  return clone(
+    loadDemoData().courses.filter(
+      (c) => c.status === "PUBLISHED" && c.enrollmentOpen !== false && !c.isCompleted
+    )
+  );
+}
+
+export function listPublicPreviousCourses() {
+  return clone(
+    loadDemoData().courses
+      .filter((c) => c.status === "PUBLISHED" && c.isCompleted === true)
+      .sort((a, b) => new Date(b.completedAt || b.updatedAt) - new Date(a.completedAt || a.updatedAt))
+  );
 }
 
 export function getPublicCourseBySlug(slug) {
@@ -505,12 +517,20 @@ export function getCourse(id) {
 
 export function saveCourse(body, id = null) {
   const data = loadDemoData();
+  const normalized = { ...body };
+  if (normalized.isCompleted) {
+    normalized.enrollmentOpen = false;
+    if (!normalized.completedAt) normalized.completedAt = new Date().toISOString();
+  } else if (normalized.isCompleted === false) {
+    normalized.completedAt = null;
+  }
+
   if (id) {
     const idx = data.courses.findIndex((c) => c.id === id);
     if (idx === -1) return null;
     data.courses[idx] = {
       ...data.courses[idx],
-      ...body,
+      ...normalized,
       id,
       updatedAt: new Date().toISOString(),
     };
@@ -519,17 +539,49 @@ export function saveCourse(body, id = null) {
   }
   const item = {
     id: randomUUID(),
-    slug: body.slug || slugify(body.title || "course"),
+    slug: normalized.slug || slugify(normalized.title || "course"),
     status: "DRAFT",
     enrollmentOpen: false,
     certificateAvailable: true,
+    isCompleted: false,
+    completedAt: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    ...body,
+    ...normalized,
   };
   data.courses.unshift(item);
   persistDemoData();
   return clone(item);
+}
+
+export function createPublicEnrollment({ name, email, phone, courseSlug, paymentSlipUrl = null }) {
+  const data = loadDemoData();
+  const course = data.courses.find(
+    (c) => (c.slug === courseSlug || c.id === courseSlug) && c.status === "PUBLISHED"
+  );
+  if (!course) return { error: "Course not found" };
+  if (course.isCompleted || course.enrollmentOpen === false) {
+    return { error: "Enrollment is closed for this course" };
+  }
+
+  const item = {
+    id: randomUUID(),
+    fullName: name,
+    email,
+    phone: phone || null,
+    courseId: course.id,
+    status: "NEW",
+    paymentStatus: "PENDING",
+    paymentSlipUrl,
+    enrollmentDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    progress: 0,
+    certificateIssued: false,
+    statusHistory: [],
+  };
+  data.enrollments.unshift(item);
+  persistDemoData();
+  return { enrollment: enrichEnrollment(item, data.courses), course };
 }
 
 export function deleteCourse(id) {
