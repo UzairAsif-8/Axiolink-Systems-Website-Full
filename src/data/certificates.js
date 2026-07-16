@@ -1,4 +1,10 @@
 /** Buland Parwaz certificate records — edit names and add entries here */
+import {
+  displayCertificateCode,
+  formatCertificateCode,
+  stripCertificateCode,
+} from "../utils/certificateCode.js";
+
 export const certificates = [
   {
     id: 1,
@@ -24,16 +30,27 @@ export const certificates = [
     issueDate: "2026-06-22",
     isValid: true,
   },
-];
+].map((record) => ({
+  ...record,
+  certificateCode: displayCertificateCode(record.certificateCode),
+}));
 
 export const findCertificateByCode = (code) => {
-  const normalized = code?.trim().toUpperCase();
-  if (!normalized) return null;
+  const raw = stripCertificateCode(code, { maxLength: null });
+  const formatted = formatCertificateCode(code);
+  if (!raw) return null;
 
   return (
-    certificates.find(
-      (record) =>
-        record.certificateCode.toUpperCase() === normalized && record.isValid
-    ) ?? null
+    certificates.find((record) => {
+      if (!record.isValid) return false;
+      const storedRaw = stripCertificateCode(record.certificateCode, {
+        maxLength: null,
+      });
+      return (
+        storedRaw === raw ||
+        record.certificateCode === formatted ||
+        record.certificateCode === String(code || "").trim().toUpperCase()
+      );
+    }) ?? null
   );
 };

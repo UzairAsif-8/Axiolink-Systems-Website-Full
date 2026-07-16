@@ -1,5 +1,8 @@
 import { apiUrl } from "./config.js";
-import { formatCertificateCode } from "../utils/certificateCode.js";
+import {
+  displayCertificateCode,
+  formatCertificateCode,
+} from "../utils/certificateCode.js";
 
 /** Verify certificate via backend API */
 export async function verifyCertificate(code) {
@@ -18,6 +21,9 @@ export async function verifyCertificate(code) {
       valid: true,
       certificate: {
         ...result.certificate,
+        certificateCode: displayCertificateCode(
+          result.certificate.certificateCode || formatted
+        ),
         issueDate:
           typeof result.certificate.issueDate === "string"
             ? result.certificate.issueDate.slice(0, 10)

@@ -1,6 +1,7 @@
 import prisma from "../config/database.js";
 import { asyncHandler, success } from "../utils/helpers.js";
 import { notifyAdmins } from "../services/audit.service.js";
+import { displayCertificateCode } from "../utils/certificateCode.js";
 
 export const getStats = asyncHandler(async (req, res) => {
   const now = new Date();
@@ -175,7 +176,20 @@ export const globalSearch = asyncHandler(async (req, res) => {
     }),
   ]);
 
-  success(res, { internships, jobs, applications, courses, messages, blogs, employees, certificates, enrollments });
+  success(res, {
+    internships,
+    jobs,
+    applications,
+    courses,
+    messages,
+    blogs,
+    employees,
+    certificates: certificates.map((c) => ({
+      ...c,
+      certificateCode: displayCertificateCode(c.certificateCode),
+    })),
+    enrollments,
+  });
 });
 
 export const getNotifications = asyncHandler(async (req, res) => {

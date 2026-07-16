@@ -203,8 +203,8 @@ const CertificateVerification = ({
                     <ShieldCheck className="w-5 h-5 text-primary-600 mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm text-neutral-500">Certificate ID</p>
-                      <p className="font-mono font-semibold text-neutral-900">
-                        {result.certificate.certificateCode}
+                      <p className="font-mono font-semibold text-neutral-900 tracking-wide">
+                        {displayCertificateCode(result.certificate.certificateCode)}
                       </p>
                     </div>
                   </div>

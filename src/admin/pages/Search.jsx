@@ -1,6 +1,7 @@
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api/client";
+import { displayCertificateCode } from "../../utils/certificateCode";
 
 const SearchAdmin = () => {
   const [params] = useSearchParams();
@@ -25,12 +26,13 @@ const SearchAdmin = () => {
   }
 
   const sections = [
-    { key: "jobs", label: "Jobs", link: (i) => `/admin/jobs/${i.id}/edit` },
-    { key: "internships", label: "Internships", link: (i) => `/admin/internships/${i.id}/applications` },
-    { key: "applications", label: "Applications", link: (i) => `/admin/applications/${i.id}` },
-    { key: "courses", label: "Courses", link: () => "/admin/courses" },
-    { key: "messages", label: "Messages", link: () => "/admin/messages" },
-    { key: "blogs", label: "Blogs", link: () => "/admin/blogs" },
+    { key: "jobs", label: "Jobs", link: (i) => `/admin/jobs/${i.id}/edit`, title: (i) => i.title || i.name },
+    { key: "internships", label: "Internships", link: (i) => `/admin/internships/${i.id}/applications`, title: (i) => i.title || i.name },
+    { key: "applications", label: "Applications", link: (i) => `/admin/applications/${i.id}`, title: (i) => i.fullName || i.name },
+    { key: "courses", label: "Courses", link: () => "/admin/courses", title: (i) => i.title || i.name },
+    { key: "certificates", label: "Certificates", link: () => "/admin/certificates", title: (i) => displayCertificateCode(i.certificateCode) || i.studentName },
+    { key: "messages", label: "Messages", link: () => "/admin/messages", title: (i) => i.name || i.subject },
+    { key: "blogs", label: "Blogs", link: () => "/admin/blogs", title: (i) => i.title || i.name },
   ];
 
   return (
@@ -42,7 +44,7 @@ const SearchAdmin = () => {
       {isLoading ? (
         <p className="text-neutral-500">Searching...</p>
       ) : (
-        sections.map(({ key, label, link }) => {
+        sections.map(({ key, label, link, title }) => {
           const items = data?.[key] || [];
           if (!items.length) return null;
           return (
@@ -53,9 +55,13 @@ const SearchAdmin = () => {
                   <li key={item.id}>
                     <Link
                       to={link(item)}
-                      className="text-sm text-primary-600 hover:underline"
+                      className="text-sm text-primary-600 hover:underline font-mono"
                     >
-                      {item.title || item.fullName || item.name} {item.email ? `(${item.email})` : ""}
+                      {title(item)}
+                      {item.email ? ` (${item.email})` : ""}
+                      {key === "certificates" && item.studentName
+                        ? ` — ${item.studentName}`
+                        : ""}
                     </Link>
                   </li>
                 ))}

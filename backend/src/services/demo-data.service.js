@@ -196,7 +196,16 @@ function enrichEnrollment(enrollment, courses) {
 }
 
 export function listCertificates(query = {}) {
-  return paginate(loadDemoData().certificates, parseInt(query.page || "1", 10), parseInt(query.limit || "20", 10));
+  const result = paginate(
+    loadDemoData().certificates,
+    parseInt(query.page || "1", 10),
+    parseInt(query.limit || "20", 10)
+  );
+  result.data = result.data.map((c) => ({
+    ...c,
+    certificateCode: displayCertificateCode(c.certificateCode),
+  }));
+  return result;
 }
 
 export function createCertificate(body) {
@@ -593,7 +602,9 @@ export function markEnrollmentCertificateIssued(id, issued = true, changedBy = "
       (c) => c.enrollmentId === enrollment.id || (c.studentName === enrollment.fullName && c.courseName === courseName)
     );
     if (!existing) {
-      const code = `BP-2026-${String(2100 + data.certificates.length)}`;
+      const code = formatCertificateCode(
+        `BP26${String(2100 + data.certificates.length).padStart(13, "0")}`.slice(0, 17)
+      );
       data.certificates.unshift({
         id: randomUUID(),
         certificateCode: code,

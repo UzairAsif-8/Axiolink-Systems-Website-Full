@@ -10,6 +10,7 @@ import {
   Newspaper,
   LayoutGrid,
 } from "lucide-react";
+import { displayCertificateCode } from "../../utils/certificateCode";
 
 const fmtDate = (v) => {
   if (!v) return "—";
@@ -202,7 +203,7 @@ export const RECORD_TYPES = {
     managePath: "/admin/certificates",
     countKey: "certificates",
     columns: [
-      { key: "code", label: "Code", render: (r) => r.certificateCode },
+      { key: "code", label: "Code", render: (r) => displayCertificateCode(r.certificateCode) },
       { key: "student", label: "Recipient", render: (r) => r.studentName },
       { key: "course", label: "Course / program", render: (r) => r.courseName || "—" },
       { key: "status", label: "Status", badge: true, render: (r) => (r.revokedAt ? "REVOKED" : "ACTIVE") },

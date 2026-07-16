@@ -3,6 +3,7 @@ import { validate, certificateSchema } from "../validators/schemas.js";
 import { certificateService } from "../services/certificate.service.js";
 import { audit } from "../services/audit.service.js";
 import prisma from "../config/database.js";
+import { displayCertificateCode } from "../utils/certificateCode.js";
 
 export const verifyPublic = asyncHandler(async (req, res) => {
   const result = await certificateService.verifyPublic(req.params.code?.trim() || "");
@@ -19,7 +20,11 @@ export const listAdmin = asyncHandler(async (req, res) => {
     prisma.certificate.findMany({ where, skip, take: limit, orderBy: { issueDate: "desc" } }),
     prisma.certificate.count({ where }),
   ]);
-  paginated(res, data, { page, limit, total, pages: Math.ceil(total / limit) });
+  const formatted = data.map((c) => ({
+    ...c,
+    certificateCode: displayCertificateCode(c.certificateCode),
+  }));
+  paginated(res, formatted, { page, limit, total, pages: Math.ceil(total / limit) });
 });
 
 export const create = asyncHandler(async (req, res) => {
@@ -68,7 +73,7 @@ export const exportCsv = asyncHandler(async (req, res) => {
   const rows = certs
     .map(
       (c) =>
-        `${c.certificateCode},${c.certificateNumber || ""},"${c.studentName}","${c.courseName}",${c.issueDate.toISOString()},${c.isValid}`
+        `${displayCertificateCode(c.certificateCode)},${c.certificateNumber || ""},"${c.studentName}","${c.courseName}",${c.issueDate.toISOString()},${c.isValid}`
     )
     .join("\n");
   res.setHeader("Content-Type", "text/csv");

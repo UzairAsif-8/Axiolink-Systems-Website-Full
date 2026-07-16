@@ -233,7 +233,8 @@ export async function seedEducation(prisma) {
   for (let i = 0; i < certEligible.length; i++) {
     const enrollment = certEligible[i];
     const course = courses.find((c) => c.id === enrollment.courseId);
-    const code = `BP-2026-${String(1001 + i).padStart(4, "0")}`;
+    const raw = `BP26${String(1001 + i).padStart(13, "0")}`.slice(0, 17);
+    const code = `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 10)}-${raw.slice(10, 14)}-${raw.slice(14, 17)}`;
 
     const certificate = await prisma.certificate.create({
       data: {

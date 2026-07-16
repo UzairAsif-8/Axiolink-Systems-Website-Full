@@ -34,8 +34,8 @@ const CertificatesAdmin = () => {
         ...body,
         certificateCode: formatCertificateCode(body.certificateCode),
       }),
-    onSuccess: () => {
-      toast.success("Certificate issued");
+    onSuccess: (_res, body) => {
+      toast.success(`Certificate issued: ${formatCertificateCode(body.certificateCode)}`);
       setForm({ certificateCode: "", studentName: "", courseName: "" });
       refetch();
     },
@@ -48,8 +48,10 @@ const CertificatesAdmin = () => {
         ...body,
         certificateCode: formatCertificateCode(body.certificateCode),
       }),
-    onSuccess: () => {
-      toast.success("Certificate updated");
+    onSuccess: (_res, { body }) => {
+      toast.success(
+        `Certificate updated: ${displayCertificateCode(body.certificateCode)}`
+      );
       setEditTarget(null);
       refetch();
     },
@@ -222,8 +224,23 @@ const CertificatesAdmin = () => {
         </div>
       )}
 
-      <ConfirmDialog open={!!deleteTarget} title="Delete certificate?" message={`Remove certificate ${deleteTarget?.certificateCode}?`} onConfirm={() => deleteMut.mutate(deleteTarget.id)} onCancel={() => setDeleteTarget(null)} loading={deleteMut.isPending} />
-      <ConfirmDialog open={!!revokeTarget} title="Revoke certificate?" message={`Revoke ${revokeTarget?.certificateCode}? It will no longer verify.`} confirmLabel="Revoke" onConfirm={() => revokeMut.mutate(revokeTarget.id)} onCancel={() => setRevokeTarget(null)} loading={revokeMut.isPending} />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete certificate?"
+        message={`Remove certificate ${displayCertificateCode(deleteTarget?.certificateCode)}?`}
+        onConfirm={() => deleteMut.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleteMut.isPending}
+      />
+      <ConfirmDialog
+        open={!!revokeTarget}
+        title="Revoke certificate?"
+        message={`Revoke ${displayCertificateCode(revokeTarget?.certificateCode)}? It will no longer verify.`}
+        confirmLabel="Revoke"
+        onConfirm={() => revokeMut.mutate(revokeTarget.id)}
+        onCancel={() => setRevokeTarget(null)}
+        loading={revokeMut.isPending}
+      />
     </div>
   );
 };
