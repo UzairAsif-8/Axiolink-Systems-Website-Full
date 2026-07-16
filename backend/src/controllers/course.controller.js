@@ -5,6 +5,17 @@ import { notifyAdmins } from "../services/audit.service.js";
 import { enrollmentService } from "../services/enrollment.service.js";
 import { uploadFile } from "../services/upload.service.js";
 
+function isMissingColumnError(err) {
+  return err?.code === "P2022";
+}
+
+function stripCourseCompletionFields(data = {}) {
+  const next = { ...data };
+  delete next.isCompleted;
+  delete next.completedAt;
+  return next;
+}
+
 function normalizeCourseBody(body) {
   const next = { ...body };
   if (next.isCompleted) {
@@ -17,27 +28,46 @@ function normalizeCourseBody(body) {
 }
 
 export const listPublic = asyncHandler(async (_req, res) => {
-  const data = await prisma.course.findMany({
-    where: {
-      deletedAt: null,
-      status: "PUBLISHED",
-      enrollmentOpen: true,
-      isCompleted: false,
-    },
-    orderBy: { title: "asc" },
-  });
+  let data;
+  try {
+    data = await prisma.course.findMany({
+      where: {
+        deletedAt: null,
+        status: "PUBLISHED",
+        enrollmentOpen: true,
+        isCompleted: false,
+      },
+      orderBy: { title: "asc" },
+    });
+  } catch (err) {
+    if (!isMissingColumnError(err)) throw err;
+    data = await prisma.course.findMany({
+      where: {
+        deletedAt: null,
+        status: "PUBLISHED",
+        enrollmentOpen: true,
+      },
+      orderBy: { title: "asc" },
+    });
+  }
   success(res, data);
 });
 
 export const listPreviousPublic = asyncHandler(async (_req, res) => {
-  const data = await prisma.course.findMany({
-    where: {
-      deletedAt: null,
-      status: "PUBLISHED",
-      isCompleted: true,
-    },
-    orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
-  });
+  let data;
+  try {
+    data = await prisma.course.findMany({
+      where: {
+        deletedAt: null,
+        status: "PUBLISHED",
+        isCompleted: true,
+      },
+      orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
+    });
+  } catch (err) {
+    if (!isMissingColumnError(err)) throw err;
+    data = [];
+  }
   success(res, data);
 });
 
@@ -70,33 +100,50 @@ export const getById = asyncHandler(async (req, res) => {
 export const create = asyncHandler(async (req, res) => {
   const body = normalizeCourseBody(validate(courseSchema, req.body));
   const slug = body.slug || slugify(body.title);
-  const item = await prisma.course.create({
-    data: {
-      ...body,
-      slug,
-      thumbnailUrl: body.thumbnailUrl || null,
-      bannerUrl: body.bannerUrl || null,
-      completedAt: body.completedAt ? new Date(body.completedAt) : body.isCompleted ? new Date() : null,
-    },
-  });
+  const createData = {
+    ...body,
+    slug,
+    thumbnailUrl: body.thumbnailUrl || null,
+    bannerUrl: body.bannerUrl || null,
+    completedAt: body.completedAt ? new Date(body.completedAt) : body.isCompleted ? new Date() : null,
+  };
+
+  let item;
+  try {
+    item = await prisma.course.create({ data: createData });
+  } catch (err) {
+    if (!isMissingColumnError(err)) throw err;
+    item = await prisma.course.create({ data: stripCourseCompletionFields(createData) });
+  }
   success(res, item, 201);
 });
 
 export const update = asyncHandler(async (req, res) => {
   const body = normalizeCourseBody(validate(courseSchema.partial(), req.body));
-  const item = await prisma.course.update({
-    where: { id: req.params.id },
-    data: {
-      ...body,
-      ...(body.thumbnailUrl !== undefined && { thumbnailUrl: body.thumbnailUrl || null }),
-      ...(body.bannerUrl !== undefined && { bannerUrl: body.bannerUrl || null }),
-      ...(body.completedAt !== undefined && {
-        completedAt: body.completedAt ? new Date(body.completedAt) : null,
-      }),
-      ...(body.isCompleted === true && !body.completedAt && { completedAt: new Date() }),
-      ...(body.isCompleted === false && { completedAt: null }),
-    },
-  });
+  const updateData = {
+    ...body,
+    ...(body.thumbnailUrl !== undefined && { thumbnailUrl: body.thumbnailUrl || null }),
+    ...(body.bannerUrl !== undefined && { bannerUrl: body.bannerUrl || null }),
+    ...(body.completedAt !== undefined && {
+      completedAt: body.completedAt ? new Date(body.completedAt) : null,
+    }),
+    ...(body.isCompleted === true && !body.completedAt && { completedAt: new Date() }),
+    ...(body.isCompleted === false && { completedAt: null }),
+  };
+
+  let item;
+  try {
+    item = await prisma.course.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+  } catch (err) {
+    if (!isMissingColumnError(err)) throw err;
+    item = await prisma.course.update({
+      where: { id: req.params.id },
+      data: stripCourseCompletionFields(updateData),
+    });
+  }
   success(res, item);
 });
 
