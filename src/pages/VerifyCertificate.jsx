@@ -8,6 +8,10 @@ import BulandParwazLogo from "../assets/BulandParwazLogo.png";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../seo/pageMeta";
 import { siteUrl } from "../seo/siteConfig";
+import {
+  CERT_CODE_PLACEHOLDER,
+  formatCertificateCode,
+} from "../utils/certificateCode";
 
 const VerifyCertificate = () => {
   const { code: urlCode } = useParams();
@@ -16,15 +20,14 @@ const VerifyCertificate = () => {
   usePageMeta({
     ...PAGE_META.verifyCertificate,
     canonical: urlCode
-      ? siteUrl(`/verify-certificate/${encodeURIComponent(urlCode)}`)
+      ? siteUrl(`/verify-certificate/${encodeURIComponent(formatCertificateCode(urlCode))}`)
       : PAGE_META.verifyCertificate.canonical,
     noindex: Boolean(urlCode),
   });
 
   const handleVerifyWithNavigation = (certificateCode) => {
-    navigate(
-      `/verify-certificate/${encodeURIComponent(certificateCode.trim())}`
-    );
+    const formatted = formatCertificateCode(certificateCode);
+    navigate(`/verify-certificate/${encodeURIComponent(formatted)}`);
   };
 
   return (
@@ -74,7 +77,7 @@ const VerifyCertificate = () => {
           </div>
 
           <CertificateVerification
-            initialCode={urlCode || ""}
+            initialCode={urlCode ? formatCertificateCode(urlCode) : ""}
             onSubmitNavigate={handleVerifyWithNavigation}
           />
 
@@ -86,7 +89,7 @@ const VerifyCertificate = () => {
           >
             Direct verification links are supported, e.g.{" "}
             <span className="font-mono text-primary-600">
-              /verify-certificate/BP-FEDB-2026-001
+              /verify-certificate/{CERT_CODE_PLACEHOLDER}
             </span>
           </motion.p>
         </div>

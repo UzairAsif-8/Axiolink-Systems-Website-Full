@@ -1,11 +1,17 @@
 import prisma from "../config/database.js";
 import { env } from "../config/env.js";
 import { ApiError } from "../utils/helpers.js";
+import {
+  displayCertificateCode,
+  formatCertificateCode,
+  stripCertificateCode,
+} from "../utils/certificateCode.js";
 
 function generateCertificateCode() {
-  const year = new Date().getFullYear();
-  const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `AXL-${year}-${rand}`;
+  const year = String(new Date().getFullYear());
+  // 13 alphanumeric chars → XXXX-XX-XXXX-XXX
+  const rand = Math.random().toString(36).substring(2, 11).toUpperCase().padEnd(9, "0");
+  return formatCertificateCode(`AX${year}${rand}`.slice(0, 13));
 }
 
 function generateCertificateNumber() {
@@ -15,7 +21,15 @@ function generateCertificateNumber() {
 
 function buildVerificationUrl(code) {
   const base = env.clientUrl.replace(/\/$/, "");
-  return `${base}/verify-certificate/${code}`;
+  const formatted = formatCertificateCode(code) || code;
+  return `${base}/verify-certificate/${formatted}`;
+}
+
+function codesMatch(stored, incoming) {
+  const a = stripCertificateCode(stored);
+  const b = stripCertificateCode(incoming);
+  if (!a || !b) return false;
+  return a === b;
 }
 
 export const certificateService = {
@@ -68,7 +82,9 @@ export const certificateService = {
   },
 
   async createManual(body, user) {
-    const certificateCode = (body.certificateCode || generateCertificateCode()).toUpperCase();
+    const certificateCode =
+      formatCertificateCode(body.certificateCode || generateCertificateCode()) ||
+      generateCertificateCode();
     const certificateNumber = body.certificateNumber || generateCertificateNumber();
     const verificationUrl = body.verificationUrl || buildVerificationUrl(certificateCode);
 
@@ -88,17 +104,46 @@ export const certificateService = {
   },
 
   async verifyPublic(code) {
-    const cert = await prisma.certificate.findFirst({
+    const incoming = String(code || "").trim();
+    if (!incoming) {
+      return {
+        valid: false,
+        message: "Please enter a certificate code.",
+      };
+    }
+
+    const formattedIncoming = formatCertificateCode(incoming);
+    const rawIncoming = stripCertificateCode(incoming);
+
+    // Exact match first (formatted or as entered), then fall back to dash-insensitive scan.
+    let cert = await prisma.certificate.findFirst({
       where: {
         OR: [
-          { certificateCode: code.toUpperCase() },
-          { certificateNumber: code.toUpperCase() },
+          { certificateCode: formattedIncoming },
+          { certificateCode: incoming.toUpperCase() },
+          { certificateNumber: incoming.toUpperCase() },
+          ...(formattedIncoming
+            ? [{ certificateNumber: formattedIncoming }]
+            : []),
         ],
         deletedAt: null,
         isValid: true,
         revokedAt: null,
       },
     });
+
+    if (!cert && rawIncoming) {
+      const candidates = await prisma.certificate.findMany({
+        where: { deletedAt: null, isValid: true, revokedAt: null },
+        take: 500,
+      });
+      cert =
+        candidates.find(
+          (c) =>
+            codesMatch(c.certificateCode, incoming) ||
+            codesMatch(c.certificateNumber, incoming)
+        ) || null;
+    }
 
     if (!cert) {
       return {
@@ -110,7 +155,7 @@ export const certificateService = {
     return {
       valid: true,
       certificate: {
-        certificateCode: cert.certificateCode,
+        certificateCode: displayCertificateCode(cert.certificateCode),
         certificateNumber: cert.certificateNumber,
         studentName: cert.studentName,
         courseName: cert.courseName,

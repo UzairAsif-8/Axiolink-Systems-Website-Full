@@ -17,6 +17,11 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import { verifyCertificate } from "../../api/certificate";
 import { scrollToRef } from "../../utils/scrollTo";
+import {
+  CERT_CODE_PLACEHOLDER,
+  displayCertificateCode,
+  formatCertificateCode,
+} from "../../utils/certificateCode";
 
 const formatIssueDate = (dateStr) => {
   const date = new Date(`${dateStr}T00:00:00`);
@@ -32,19 +37,31 @@ const CertificateVerification = ({
   inline = false,
   onSubmitNavigate,
 }) => {
-  const [code, setCode] = useState(initialCode);
+  const [code, setCode] = useState(() => formatCertificateCode(initialCode));
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const resultRef = useRef(null);
 
   const handleVerify = useCallback(async (certificateCode) => {
-    const trimmed = certificateCode?.trim();
-    if (!trimmed) return;
+    const formatted = formatCertificateCode(certificateCode);
+    if (!formatted) return;
 
     setLoading(true);
     try {
-      const res = await verifyCertificate(trimmed);
-      setResult(res.valid ? { valid: true, certificate: res.certificate } : { valid: false });
+      const res = await verifyCertificate(formatted);
+      setResult(
+        res.valid
+          ? {
+              valid: true,
+              certificate: {
+                ...res.certificate,
+                certificateCode: displayCertificateCode(
+                  res.certificate.certificateCode || formatted
+                ),
+              },
+            }
+          : { valid: false }
+      );
     } finally {
       setLoading(false);
     }
@@ -52,8 +69,9 @@ const CertificateVerification = ({
 
   useEffect(() => {
     if (initialCode) {
-      setCode(initialCode);
-      handleVerify(initialCode);
+      const formatted = formatCertificateCode(initialCode);
+      setCode(formatted);
+      handleVerify(formatted);
     }
   }, [initialCode, handleVerify]);
 
@@ -63,12 +81,13 @@ const CertificateVerification = ({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!code.trim()) return;
+    const formatted = formatCertificateCode(code);
+    if (!formatted) return;
 
     if (onSubmitNavigate) {
-      onSubmitNavigate(code.trim());
+      onSubmitNavigate(formatted);
     } else {
-      handleVerify(code.trim());
+      handleVerify(formatted);
     }
   };
 
@@ -83,10 +102,13 @@ const CertificateVerification = ({
         <form onSubmit={onSubmit} className="space-y-6">
           <Input
             label="Enter Certificate Code"
-            placeholder="e.g. BP-FEDB-2026-001"
+            placeholder={CERT_CODE_PLACEHOLDER}
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onChange={(e) => setCode(formatCertificateCode(e.target.value))}
             className="font-mono tracking-wide"
+            autoComplete="off"
+            spellCheck={false}
+            inputMode="text"
           />
 
           <Button

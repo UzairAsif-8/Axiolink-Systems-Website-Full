@@ -1,14 +1,15 @@
 import { apiUrl } from "./config.js";
+import { formatCertificateCode } from "../utils/certificateCode.js";
 
 /** Verify certificate via backend API */
 export async function verifyCertificate(code) {
-  const trimmed = code?.trim();
-  if (!trimmed) {
+  const formatted = formatCertificateCode(code);
+  if (!formatted) {
     return { valid: false, message: "Please enter a certificate code." };
   }
 
   const response = await fetch(
-    apiUrl(`certificate/verify/${encodeURIComponent(trimmed)}`)
+    apiUrl(`certificate/verify/${encodeURIComponent(formatted)}`)
   );
   const result = await response.json();
 

@@ -2,6 +2,11 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
+import {
+  displayCertificateCode,
+  formatCertificateCode,
+  stripCertificateCode,
+} from "../utils/certificateCode.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = path.join(__dirname, "../../data/demo-data.json");
@@ -196,7 +201,10 @@ export function listCertificates(query = {}) {
 
 export function createCertificate(body) {
   const data = loadDemoData();
-  const code = (body.certificateCode || `BP-2026-${String(2000 + data.certificates.length)}`).toUpperCase();
+  const fallback = `BP26${String(2000 + data.certificates.length).padStart(9, "0")}`.slice(0, 13);
+  const code =
+    formatCertificateCode(body.certificateCode || fallback) ||
+    formatCertificateCode(fallback);
   const item = {
     id: randomUUID(),
     certificateCode: code,
@@ -213,10 +221,22 @@ export function createCertificate(body) {
 }
 
 export function verifyCertificate(code) {
-  const cert = loadDemoData().certificates.find(
-    (c) => c.certificateCode === code?.toUpperCase() && c.isValid
-  );
-  return cert ? clone(cert) : null;
+  const incoming = String(code || "").trim();
+  const formatted = formatCertificateCode(incoming);
+  const raw = stripCertificateCode(incoming, { maxLength: null });
+  const cert = loadDemoData().certificates.find((c) => {
+    if (!c.isValid) return false;
+    const storedRaw = stripCertificateCode(c.certificateCode, { maxLength: null });
+    return (
+      c.certificateCode === formatted ||
+      c.certificateCode === incoming.toUpperCase() ||
+      storedRaw === raw
+    );
+  });
+  if (!cert) return null;
+  const cloned = clone(cert);
+  cloned.certificateCode = displayCertificateCode(cloned.certificateCode);
+  return cloned;
 }
 
 export function listMessages() {
@@ -616,7 +636,12 @@ export function updateCertificate(id, body) {
   const data = loadDemoData();
   const idx = data.certificates.findIndex((c) => c.id === id);
   if (idx === -1) return null;
-  data.certificates[idx] = { ...data.certificates[idx], ...body, id };
+  const next = { ...data.certificates[idx], ...body, id };
+  if (body.certificateCode != null) {
+    next.certificateCode = formatCertificateCode(body.certificateCode);
+    next.verificationUrl = `/verify-certificate/${next.certificateCode}`;
+  }
+  data.certificates[idx] = next;
   persistDemoData();
   return clone(data.certificates[idx]);
 }
