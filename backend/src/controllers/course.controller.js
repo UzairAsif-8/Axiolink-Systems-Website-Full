@@ -46,6 +46,7 @@ function buildCourseWriteData(body, slug) {
     bannerPublicId: normalized.bannerPublicId ?? null,
     learningOutcomes: normalized.learningOutcomes,
     requirements: normalized.requirements,
+    curriculum: normalized.curriculum ?? null,
     certificateAvailable: normalized.certificateAvailable ?? true,
     enrollmentOpen: normalized.isCompleted ? false : Boolean(normalized.enrollmentOpen),
     status: normalized.status ?? "DRAFT",

@@ -8,6 +8,12 @@ import Textarea from "../../components/ui/Textarea";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CourseImageField from "../components/CourseImageField";
+import CourseModulesField from "../components/CourseModulesField";
+import {
+  buildCurriculumPayload,
+  curriculumToFormState,
+  emptyModule,
+} from "../utils/courseCurriculum";
 import toast from "react-hot-toast";
 
 const selectClass =
@@ -21,12 +27,15 @@ const CourseForm = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [thumbnailPublicId, setThumbnailPublicId] = useState(null);
+  const [modules, setModules] = useState([emptyModule()]);
   const { register, handleSubmit, reset, watch } = useForm({
     defaultValues: {
       status: "DRAFT",
       enrollmentOpen: false,
       certificateAvailable: true,
       isCompleted: false,
+      format: "",
+      schedule: "",
     },
   });
 
@@ -43,12 +52,16 @@ const CourseForm = () => {
 
   useEffect(() => {
     if (item) {
+      const curriculumForm = curriculumToFormState(item.curriculum);
       reset({
         ...item,
         enrollmentOpen: Boolean(item.enrollmentOpen),
         certificateAvailable: item.certificateAvailable !== false,
         isCompleted: Boolean(item.isCompleted),
+        format: curriculumForm.format,
+        schedule: curriculumForm.schedule,
       });
+      setModules(curriculumForm.modules);
       setThumbnailUrl(item.thumbnailUrl || null);
       setThumbnailPublicId(item.thumbnailPublicId || null);
     }
@@ -84,6 +97,11 @@ const CourseForm = () => {
   const onSubmit = (data) => {
     const completed = Boolean(data.isCompleted);
     const price = Number.isFinite(data.price) ? data.price : null;
+    const curriculum = buildCurriculumPayload({
+      format: data.format,
+      schedule: data.schedule,
+      modules,
+    });
     saveMut.mutate({
       title: data.title,
       slug: data.slug?.trim() || undefined,
@@ -95,6 +113,7 @@ const CourseForm = () => {
       status: data.status,
       thumbnailUrl: thumbnailUrl || null,
       thumbnailPublicId: thumbnailPublicId || null,
+      curriculum,
       enrollmentOpen: completed ? false : Boolean(data.enrollmentOpen),
       certificateAvailable: Boolean(data.certificateAvailable),
       isCompleted: completed,
@@ -132,6 +151,26 @@ const CourseForm = () => {
             </select>
           </div>
         </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <Input
+            label="Format"
+            {...register("format")}
+            placeholder="e.g. Live sessions, hands-on labs, weekly projects"
+            helperText="Shown in the course details sidebar."
+          />
+          <Input
+            label="Schedule"
+            {...register("schedule")}
+            placeholder="e.g. 3 sessions per week (evenings)"
+            helperText="When classes meet — days, times, or frequency."
+          />
+        </div>
+
+        <div className="pt-2 border-t border-slate-100">
+          <CourseModulesField modules={modules} onChange={setModules} />
+        </div>
+
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" {...register("enrollmentOpen")} disabled={isCompleted} />
           Enrollment open

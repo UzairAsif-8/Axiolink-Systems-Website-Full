@@ -116,6 +116,25 @@ const optionalNumeric = z.preprocess((val) => {
   return Number.isFinite(n) ? n : null;
 }, z.number().optional().nullable());
 
+const courseModuleSchema = z.object({
+  title: z.string().min(1),
+  topics: z.array(z.string()).optional().default([]),
+  weeks: z.number().optional(),
+});
+
+const curriculumSchema = z
+  .union([
+    z.null(),
+    z.array(courseModuleSchema),
+    z.object({
+      format: z.string().optional(),
+      schedule: z.string().optional(),
+      modules: z.array(courseModuleSchema).optional().default([]),
+    }),
+  ])
+  .optional()
+  .nullable();
+
 export const courseSchema = z.object({
   title: z.string().min(3),
   slug: z.string().optional(),
@@ -128,6 +147,7 @@ export const courseSchema = z.object({
   discount: optionalNumeric,
   learningOutcomes: z.array(z.string()).optional(),
   requirements: z.array(z.string()).optional(),
+  curriculum: curriculumSchema,
   certificateAvailable: z.boolean().optional(),
   enrollmentOpen: z.boolean().optional(),
   isCompleted: z.boolean().optional(),

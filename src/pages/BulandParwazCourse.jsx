@@ -26,22 +26,57 @@ import { getCourseDisplayImage } from "../utils/courseImages";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META, courseMeta } from "../seo/pageMeta";
 
-const mapApiCourseDetail = (c) => ({
-  id: c.slug || c.id,
-  title: c.title,
-  image: getCourseDisplayImage(c),
-  thumbnailUrl: c.thumbnailUrl,
-  bannerUrl: c.bannerUrl,
-  category: c.category,
-  shortDescription: typeof c.description === "string" ? c.description.slice(0, 220) : "",
-  fullDescription: c.description,
-  status: c.isCompleted ? "completed" : c.enrollmentOpen !== false ? "live" : "closed",
-  duration: c.duration,
-  level: c.level,
-  outcomes: c.learningOutcomes || [],
-  modules: Array.isArray(c.curriculum) ? c.curriculum : [],
-  prerequisites: c.requirements || [],
-});
+const parseCurriculum = (raw) => {
+  if (!raw) return { format: "", schedule: "", modules: [] };
+  if (Array.isArray(raw)) {
+    return {
+      format: "",
+      schedule: "",
+      modules: raw
+        .filter((m) => m && typeof m === "object")
+        .map((m) => ({
+          title: m.title || "Module",
+          topics: Array.isArray(m.topics) ? m.topics : [],
+        })),
+    };
+  }
+  if (typeof raw === "object") {
+    const modules = Array.isArray(raw.modules) ? raw.modules : [];
+    return {
+      format: typeof raw.format === "string" ? raw.format : "",
+      schedule: typeof raw.schedule === "string" ? raw.schedule : "",
+      modules: modules
+        .filter((m) => m && typeof m === "object")
+        .map((m) => ({
+          title: m.title || "Module",
+          topics: Array.isArray(m.topics) ? m.topics : [],
+        })),
+    };
+  }
+  return { format: "", schedule: "", modules: [] };
+};
+
+const mapApiCourseDetail = (c) => {
+  const curriculum = parseCurriculum(c.curriculum);
+  return {
+    id: c.slug || c.id,
+    title: c.title,
+    image: getCourseDisplayImage(c),
+    thumbnailUrl: c.thumbnailUrl,
+    bannerUrl: c.bannerUrl,
+    category: c.category,
+    shortDescription: typeof c.description === "string" ? c.description.slice(0, 220) : "",
+    fullDescription: c.description,
+    status: c.isCompleted ? "completed" : c.enrollmentOpen !== false ? "live" : "closed",
+    duration: c.duration,
+    level: c.level,
+    format: curriculum.format || null,
+    schedule: curriculum.schedule || null,
+    outcomes: c.learningOutcomes || [],
+    modules: curriculum.modules,
+    prerequisites: c.requirements || [],
+  };
+};
 
 const BulandParwazCourse = () => {
   const { courseId } = useParams();
@@ -170,9 +205,14 @@ const BulandParwazCourse = () => {
                     </h2>
                   </div>
                   <div className="space-y-6">
-                    {course.modules.map((module, index) => (
+                    {course.modules.length === 0 ? (
+                      <p className="text-sm text-neutral-500">
+                        Curriculum details will be published soon.
+                      </p>
+                    ) : (
+                      course.modules.map((module, index) => (
                       <div
-                        key={module.title}
+                        key={`${module.title}-${index}`}
                         className="p-5 bg-neutral-50 rounded-xl border border-neutral-100"
                       >
                         <div className="flex items-start gap-3 mb-4">
@@ -183,19 +223,22 @@ const BulandParwazCourse = () => {
                             {module.title}
                           </h3>
                         </div>
-                        <ul className="ml-11 space-y-2">
-                          {module.topics.map((topic) => (
-                            <li
-                              key={topic}
-                              className="flex items-start gap-2 text-neutral-700 text-sm leading-relaxed"
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary-400 mt-2 shrink-0" />
-                              {topic}
-                            </li>
-                          ))}
-                        </ul>
+                        {module.topics?.length > 0 && (
+                          <ul className="ml-11 space-y-2">
+                            {module.topics.map((topic) => (
+                              <li
+                                key={topic}
+                                className="flex items-start gap-2 text-neutral-700 text-sm leading-relaxed"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary-400 mt-2 shrink-0" />
+                                {topic}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </Card>
               </motion.div>
@@ -285,13 +328,13 @@ const BulandParwazCourse = () => {
                   <div>
                     <dt className="text-sm text-neutral-500">Format</dt>
                     <dd className="font-medium text-neutral-900">
-                      {course.format}
+                      {course.format || "—"}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-sm text-neutral-500">Schedule</dt>
                     <dd className="font-medium text-neutral-900">
-                      {course.schedule}
+                      {course.schedule || "—"}
                     </dd>
                   </div>
                   <div>
