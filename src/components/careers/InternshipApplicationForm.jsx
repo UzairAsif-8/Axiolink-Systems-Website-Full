@@ -160,8 +160,15 @@ const InternshipApplicationForm = ({
   const onSubmit = async (data) => {
     if (!confirmAccurate || !agreeProcess) return;
 
+    if (!resume) {
+      setResumeError("Resume / CV is required");
+      return;
+    }
+    if (resumeError) return;
+
     setLoading(true);
     setSubmitError("");
+    setResumeError("");
 
     const payload = buildApplicationPayload(
       {
@@ -197,7 +204,7 @@ const InternshipApplicationForm = ({
 
   const onInvalid = () => scrollToRef(formContainerRef);
 
-  const step3Complete = confirmAccurate && agreeProcess;
+  const step3Complete = confirmAccurate && agreeProcess && !!resume && !resumeError;
 
   if (submitted) {
     return (
@@ -396,16 +403,17 @@ const InternshipApplicationForm = ({
               </p>
 
               <FileDropzone
-                label="Resume / CV (optional)"
+                label="Resume / CV"
+                required
                 value={resume}
                 onChange={(file, err) => {
                   setResume(file);
-                  setResumeError(err || "");
+                  setResumeError(err || (file ? "" : "Resume / CV is required"));
                 }}
                 error={resumeError}
-                emptyText="Add your resume if you have one"
-                emptyHint="Optional — PDF only, max 5MB"
-                helperText="PDF only, max 5MB"
+                emptyText="Upload your resume (required)"
+                emptyHint="PDF only, max 5MB — required to apply"
+                helperText="PDF only, max 5MB · Required"
               />
 
               <Input

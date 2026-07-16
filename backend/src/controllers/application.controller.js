@@ -17,14 +17,14 @@ export const submitInternship = asyncHandler(async (req, res) => {
     ? await prisma.internship.findFirst({ where: { slug: payload.internshipPosition } })
     : null;
 
-  let resumeUrl = null;
-  let resumePublicId = null;
-  if (req.file) {
-    await virusScanHook(req.file.path);
-    const uploaded = await uploadFile(req.file, { folder: "resumes", req });
-    resumeUrl = uploaded.url;
-    resumePublicId = uploaded.publicId;
+  if (!req.file) {
+    throw new ApiError(400, "Resume / CV is required to apply for an internship");
   }
+
+  await virusScanHook(req.file.path);
+  const uploaded = await uploadFile(req.file, { folder: "resumes", req });
+  const resumeUrl = uploaded.url;
+  const resumePublicId = uploaded.publicId;
 
   const application = await prisma.application.create({
     data: {
