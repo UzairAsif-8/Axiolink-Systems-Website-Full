@@ -5,6 +5,10 @@
       "destination": "https://axiolink-systems-website-full.onrender.com/api/:path*"
     },
     {
+      "source": "/uploads/:path*",
+      "destination": "https://axiolink-systems-website-full.onrender.com/uploads/:path*"
+    },
+    {
       "source": "/((?!robots\\.txt|sitemap\\.xml).*)",
       "destination": "/index.html"
     }

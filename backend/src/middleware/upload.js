@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { validateMimeType } from "../services/upload.service.js";
+import { env } from "../config/env.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, "../../uploads");
@@ -38,7 +39,11 @@ export const uploadResume = upload.single("resume");
 export const uploadDocument = upload.single("file");
 export const uploadImage = upload.single("image");
 
-export const getLocalFileUrl = (filename, req) =>
-  `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+export const getLocalFileUrl = (filename, req) => {
+  const base =
+    env.publicBaseUrl ||
+    (req ? `${req.protocol}://${req.get("host")}` : "");
+  return `${String(base).replace(/\/$/, "")}/uploads/${filename}`;
+};
 
 export { uploadDir };

@@ -72,7 +72,18 @@ function validateEnv() {
       );
     }
   }
-}
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    (process.env.UPLOAD_PROVIDER || "local") === "local"
+  ) {
+    console.warn(
+      "\n⚠️ UPLOAD_PROVIDER=local in production. Render's disk is ephemeral — uploaded CVs will be lost after redeploys."
+    );
+    console.warn(
+      "   Set UPLOAD_PROVIDER=cloudinary and CLOUDINARY_* env vars so resumes persist.\n"
+    );
+  }
 
 validateEnv();
 
@@ -132,6 +143,19 @@ export const env = {
   })(),
 
   uploadProvider: process.env.UPLOAD_PROVIDER || "local",
+
+  /**
+   * Public origin used when building local `/uploads/...` URLs.
+   * Prefer RENDER_EXTERNAL_URL on Render so files are not saved against the
+   * frontend hostname (which cannot serve the upload disk).
+   */
+  publicBaseUrl: (
+    process.env.PUBLIC_BASE_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    ""
+  )
+    .trim()
+    .replace(/\/$/, ""),
 
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,

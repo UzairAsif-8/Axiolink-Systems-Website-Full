@@ -1,4 +1,5 @@
 import { ExternalLink, FileImage, FileText } from "lucide-react";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 function isPdfUrl(url = "") {
   return /\.pdf($|\?)/i.test(url) || url.toLowerCase().includes("application/pdf");
@@ -9,7 +10,9 @@ function isImageUrl(url = "") {
 }
 
 const PaymentSlipPreview = ({ url, compact = false }) => {
-  if (!url) {
+  const resolved = resolveMediaUrl(url);
+
+  if (!resolved) {
     return (
       <p className="text-sm text-slate-500">
         No payment slip uploaded for this enrollment.
@@ -17,13 +20,13 @@ const PaymentSlipPreview = ({ url, compact = false }) => {
     );
   }
 
-  const pdf = isPdfUrl(url);
-  const image = !pdf && isImageUrl(url);
+  const pdf = isPdfUrl(resolved);
+  const image = !pdf && isImageUrl(resolved);
 
   if (compact) {
     return (
       <a
-        href={url}
+        href={resolved}
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
@@ -39,7 +42,7 @@ const PaymentSlipPreview = ({ url, compact = false }) => {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <a
-          href={url}
+          href={resolved}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
@@ -51,9 +54,9 @@ const PaymentSlipPreview = ({ url, compact = false }) => {
       </div>
 
       {image && (
-        <a href={url} target="_blank" rel="noreferrer" className="block">
+        <a href={resolved} target="_blank" rel="noreferrer" className="block">
           <img
-            src={url}
+            src={resolved}
             alt="Payment slip"
             className="max-h-96 w-full rounded-xl border border-slate-200 object-contain bg-slate-50"
           />
@@ -63,7 +66,7 @@ const PaymentSlipPreview = ({ url, compact = false }) => {
       {pdf && (
         <iframe
           title="Payment slip PDF"
-          src={url}
+          src={resolved}
           className="w-full h-[min(70vh,520px)] rounded-xl border border-slate-200 bg-white"
         />
       )}

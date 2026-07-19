@@ -66,7 +66,10 @@ export async function uploadFile(file, { folder = "axiolink", req } = {}) {
     };
   }
 
-  const url = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
+  const base =
+    env.publicBaseUrl ||
+    (req ? `${req.protocol}://${req.get("host")}` : "");
+  const url = `${String(base).replace(/\/$/, "")}/uploads/${file.filename}`;
   return {
     url,
     publicId: null,

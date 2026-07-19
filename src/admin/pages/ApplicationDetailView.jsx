@@ -18,6 +18,7 @@ import {
   WITHDRAWN_STATUS,
   formatWorkMode,
 } from "../constants/applications";
+import { resolveMediaUrl, isLikelyLocalUpload } from "../../utils/mediaUrl";
 import toast from "react-hot-toast";
 
 const selectClass =
@@ -212,14 +213,22 @@ const ApplicationDetailView = ({ applicationId, backTo, onDeleted }) => {
           )}
         </dl>
         {detail.resumeUrl && (
-          <a
-            href={detail.resumeUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 mt-5 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
-          >
-            <Download className="w-4 h-4" />Download resume
-          </a>
+          <div className="mt-5 space-y-2">
+            <a
+              href={resolveMediaUrl(detail.resumeUrl)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
+            >
+              <Download className="w-4 h-4" />Download resume
+            </a>
+            {isLikelyLocalUpload(detail.resumeUrl) && (
+              <p className="text-xs text-amber-700">
+                This resume was stored on the server disk. If the link fails after a redeploy, the
+                file was removed — enable Cloudinary for permanent storage.
+              </p>
+            )}
+          </div>
         )}
       </Panel>
 

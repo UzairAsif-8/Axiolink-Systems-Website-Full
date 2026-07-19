@@ -56,7 +56,19 @@ app.use(morgan(env.nodeEnv === "development" ? "dev" : "combined"));
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"), {
+    fallthrough: true,
+  })
+);
+app.use("/uploads", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message:
+      "File not found. Local uploads on Render are deleted after redeploys. Re-upload or enable Cloudinary (UPLOAD_PROVIDER=cloudinary).",
+  });
+});
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 300 });
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
