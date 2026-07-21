@@ -188,8 +188,29 @@ All significant admin actions are logged to `AuditLog`:
 - [ ] Render **Pre-Deploy Command**: `npx prisma migrate deploy` (run once per deploy — not in Build or Start)
 - [ ] Render **Start Command**: `npm start` (starts the server only)
 - [ ] `npm run seed` (one-time or when seed data changes)
-- [ ] Cloudinary configured
+- [ ] Cloudinary configured (required for CV / payment slip uploads — see below)
 - [ ] CLIENT_URL set to production frontend URL
+
+---
+
+## Cloudinary (CV & document uploads)
+
+Application resumes, job CVs, course payment slips, and course images use `uploadFile()`. In production, files **must** go to Cloudinary — Render's local disk is wiped on every redeploy.
+
+### Render environment variables
+
+| Variable | Value |
+|----------|--------|
+| `UPLOAD_PROVIDER` | `cloudinary` |
+| `CLOUDINARY_CLOUD_NAME` | From [Cloudinary Dashboard](https://console.cloudinary.com) → Settings |
+| `CLOUDINARY_API_KEY` | Same page |
+| `CLOUDINARY_API_SECRET` | Same page (keep secret) |
+
+If all three `CLOUDINARY_*` vars are set, production auto-enables Cloudinary even without `UPLOAD_PROVIDER`.
+
+After deploy, logs should show: `✓ File uploads → Cloudinary (your-cloud-name)`.
+
+New resume URLs look like `https://res.cloudinary.com/.../resumes/...` — not `onrender.com/uploads/...`.
 
 ---
 

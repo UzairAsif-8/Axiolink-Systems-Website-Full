@@ -13,6 +13,12 @@ const ALLOWED_MIME = new Set([
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
 
+const DOCUMENT_MIME = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
 let cloudinaryConfigured = false;
 
 function configureCloudinary() {
@@ -22,9 +28,22 @@ function configureCloudinary() {
       cloud_name: env.cloudinary.cloudName,
       api_key: env.cloudinary.apiKey,
       api_secret: env.cloudinary.apiSecret,
+      secure: true,
     });
     cloudinaryConfigured = true;
   }
+}
+
+export function isCloudinaryEnabled() {
+  configureCloudinary();
+  return cloudinaryConfigured;
+}
+
+/** PDFs and Word docs use `raw` on Cloudinary so browsers can open/download them reliably. */
+function cloudinaryResourceType(mimetype) {
+  if (DOCUMENT_MIME.has(mimetype)) return "raw";
+  if (mimetype?.startsWith("image/")) return "image";
+  return "auto";
 }
 
 export function validateMimeType(mimetype) {
@@ -41,14 +60,21 @@ export async function uploadFile(file, { folder = "axiolink", req } = {}) {
   if (env.uploadProvider === "cloudinary") {
     configureCloudinary();
     if (!cloudinaryConfigured) {
-      throw new Error("Cloudinary is not configured. Set CLOUDINARY_* env vars or use UPLOAD_PROVIDER=local");
+      throw new Error(
+        "Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET."
+      );
     }
+
+    const resourceType = cloudinaryResourceType(file.mimetype);
+    const ext = path.extname(file.originalname || "") || "";
 
     const result = await cloudinary.uploader.upload(file.path, {
       folder,
-      resource_type: "auto",
+      resource_type: resourceType,
+      type: "upload",
       use_filename: true,
       unique_filename: true,
+      ...(resourceType === "raw" && ext ? { format: ext.replace(/^\./, "") } : {}),
     });
 
     try {
@@ -79,12 +105,13 @@ export async function uploadFile(file, { folder = "axiolink", req } = {}) {
   };
 }
 
-export async function deleteUploadedFile(publicId) {
+export async function deleteUploadedFile(publicId, { mimeType } = {}) {
   if (!publicId || env.uploadProvider !== "cloudinary") return;
   configureCloudinary();
   if (!cloudinaryConfigured) return;
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const resourceType = mimeType ? cloudinaryResourceType(mimeType) : "image";
+    await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
   } catch (err) {
     console.warn("Cloudinary delete failed:", err.message);
   }

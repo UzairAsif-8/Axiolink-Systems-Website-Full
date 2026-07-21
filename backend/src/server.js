@@ -15,6 +15,17 @@ const start = async () => {
     console.log("✓ Database URL configured");
   }
 
+  if (env.uploadProvider === "cloudinary") {
+    const { isCloudinaryEnabled } = await import("./services/upload.service.js");
+    if (isCloudinaryEnabled()) {
+      console.log(`✓ File uploads → Cloudinary (${env.cloudinary.cloudName})`);
+    } else {
+      console.warn("⚠️ UPLOAD_PROVIDER=cloudinary but Cloudinary is not configured");
+    }
+  } else {
+    console.warn("⚠️ File uploads → local disk (not persistent on Render)");
+  }
+
   if (!env.admin.email || !env.admin.passwordHash) {
     console.warn("⚠️  Set ADMIN_EMAIL and ADMIN_PASSWORD_HASH in backend/.env");
     console.warn("   Generate hash: node scripts/hash-password.js YourPassword\n");

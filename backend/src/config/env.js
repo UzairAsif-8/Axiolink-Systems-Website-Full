@@ -57,14 +57,16 @@ function validateEnv() {
     console.warn("node scripts/hash-password.js YourPassword\n");
   }
 
-  if (process.env.UPLOAD_PROVIDER === "cloudinary") {
+  const uploadProvider = resolveUploadProvider();
+
+  if (uploadProvider === "cloudinary") {
     const requiredCloudinary = [
       "CLOUDINARY_CLOUD_NAME",
       "CLOUDINARY_API_KEY",
       "CLOUDINARY_API_SECRET",
     ];
 
-    const missing = requiredCloudinary.filter((key) => !process.env[key]);
+    const missing = requiredCloudinary.filter((key) => !process.env[key]?.trim());
 
     if (missing.length) {
       console.warn(
@@ -73,10 +75,7 @@ function validateEnv() {
     }
   }
 
-  if (
-    process.env.NODE_ENV === "production" &&
-    (process.env.UPLOAD_PROVIDER || "local") === "local"
-  ) {
+  if (isProduction && uploadProvider === "local") {
     console.warn(
       "\n⚠️ UPLOAD_PROVIDER=local in production. Render's disk is ephemeral — uploaded CVs will be lost after redeploys."
     );
@@ -84,6 +83,38 @@ function validateEnv() {
       "   Set UPLOAD_PROVIDER=cloudinary and CLOUDINARY_* env vars so resumes persist.\n"
     );
   }
+
+  if (isProduction && uploadProvider === "cloudinary") {
+    const missingCloudinary = [
+      "CLOUDINARY_CLOUD_NAME",
+      "CLOUDINARY_API_KEY",
+      "CLOUDINARY_API_SECRET",
+    ].filter((key) => !process.env[key]?.trim());
+
+    if (missingCloudinary.length) {
+      console.error("\n❌ Cloudinary is required in production but these variables are missing:\n");
+      missingCloudinary.forEach((key) => console.error(`   • ${key}`));
+      console.error("\nAdd them in Render → Environment, then redeploy.\n");
+      process.exit(1);
+    }
+  }
+}
+
+function resolveUploadProvider() {
+  const explicit = process.env.UPLOAD_PROVIDER?.trim().toLowerCase();
+  if (explicit === "cloudinary" || explicit === "local") return explicit;
+
+  const hasCloudinary =
+    process.env.CLOUDINARY_CLOUD_NAME?.trim() &&
+    process.env.CLOUDINARY_API_KEY?.trim() &&
+    process.env.CLOUDINARY_API_SECRET?.trim();
+
+  if (process.env.NODE_ENV === "production" && hasCloudinary) {
+    return "cloudinary";
+  }
+
+  return "local";
+}
 
 validateEnv();
 
@@ -142,7 +173,7 @@ export const env = {
     return undefined;
   })(),
 
-  uploadProvider: process.env.UPLOAD_PROVIDER || "local",
+  uploadProvider: resolveUploadProvider(),
 
   /**
    * Public origin used when building local `/uploads/...` URLs.
