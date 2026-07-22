@@ -76,7 +76,14 @@ app.use("/api", limiter);
 app.use("/api/auth/login", authLimiter);
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uploadProvider: env.uploadProvider,
+    cloudinaryConfigured: Boolean(
+      env.cloudinary.cloudName && env.cloudinary.apiKey && env.cloudinary.apiSecret
+    ),
+  });
 });
 
 // Public API

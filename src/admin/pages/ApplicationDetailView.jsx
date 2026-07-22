@@ -214,19 +214,24 @@ const ApplicationDetailView = ({ applicationId, backTo, onDeleted }) => {
         </dl>
         {detail.resumeUrl && (
           <div className="mt-5 space-y-2">
-            <a
-              href={resolveMediaUrl(detail.resumeUrl)}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
-            >
-              <Download className="w-4 h-4" />Download resume
-            </a>
-            {isLikelyLocalUpload(detail.resumeUrl) && (
-              <p className="text-xs text-amber-700">
-                This resume was stored on the server disk. If the link fails after a redeploy, the
-                file was removed — enable Cloudinary for permanent storage.
-              </p>
+            {isLikelyLocalUpload(detail.resumeUrl) ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <p className="font-medium">This resume is no longer available</p>
+                <p className="mt-1 text-amber-800">
+                  It was stored on the server disk and removed after a redeploy. Ask the applicant
+                  to resend their CV, or have them re-apply once Cloudinary uploads are enabled.
+                </p>
+                <p className="mt-2 text-xs text-amber-700 break-all opacity-80">{detail.resumeUrl}</p>
+              </div>
+            ) : (
+              <a
+                href={resolveMediaUrl(detail.resumeUrl)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
+              >
+                <Download className="w-4 h-4" />Download resume
+              </a>
             )}
           </div>
         )}

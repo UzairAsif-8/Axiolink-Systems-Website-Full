@@ -76,12 +76,17 @@ function validateEnv() {
   }
 
   if (isProduction && uploadProvider === "local") {
-    console.warn(
-      "\n⚠️ UPLOAD_PROVIDER=local in production. Render's disk is ephemeral — uploaded CVs will be lost after redeploys."
+    console.error(
+      "\n❌ UPLOAD_PROVIDER=local is not allowed in production (Render disk is ephemeral)."
     );
-    console.warn(
-      "   Set UPLOAD_PROVIDER=cloudinary and CLOUDINARY_* env vars so resumes persist.\n"
+    console.error(
+      "   Set these Render environment variables, then redeploy:\n" +
+        "   • UPLOAD_PROVIDER=cloudinary\n" +
+        "   • CLOUDINARY_CLOUD_NAME\n" +
+        "   • CLOUDINARY_API_KEY\n" +
+        "   • CLOUDINARY_API_SECRET\n"
     );
+    process.exit(1);
   }
 
   if (isProduction && uploadProvider === "cloudinary") {
@@ -101,18 +106,26 @@ function validateEnv() {
 }
 
 function resolveUploadProvider() {
-  const explicit = process.env.UPLOAD_PROVIDER?.trim().toLowerCase();
-  if (explicit === "cloudinary" || explicit === "local") return explicit;
-
   const hasCloudinary =
-    process.env.CLOUDINARY_CLOUD_NAME?.trim() &&
-    process.env.CLOUDINARY_API_KEY?.trim() &&
-    process.env.CLOUDINARY_API_SECRET?.trim();
+    Boolean(process.env.CLOUDINARY_CLOUD_NAME?.trim()) &&
+    Boolean(process.env.CLOUDINARY_API_KEY?.trim()) &&
+    Boolean(process.env.CLOUDINARY_API_SECRET?.trim());
 
+  const explicit = process.env.UPLOAD_PROVIDER?.trim().toLowerCase();
+
+  // Production: never use ephemeral local disk when Cloudinary credentials exist,
+  // even if UPLOAD_PROVIDER=local was left over from an older deploy.
   if (process.env.NODE_ENV === "production" && hasCloudinary) {
+    if (explicit === "local") {
+      console.warn(
+        "\n⚠️ UPLOAD_PROVIDER=local ignored in production because CLOUDINARY_* is set. Using Cloudinary.\n"
+      );
+    }
     return "cloudinary";
   }
 
+  if (explicit === "cloudinary" || explicit === "local") return explicit;
+  if (hasCloudinary && explicit !== "local") return "cloudinary";
   return "local";
 }
 
