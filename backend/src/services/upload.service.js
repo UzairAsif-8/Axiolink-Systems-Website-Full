@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import path from "path";
 import { env } from "../config/env.js";
 
 const ALLOWED_MIME = new Set([
@@ -9,12 +8,6 @@ const ALLOWED_MIME = new Set([
   "image/png",
   "image/webp",
   "image/gif",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]);
-
-const DOCUMENT_MIME = new Set([
-  "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
@@ -39,9 +32,18 @@ export function isCloudinaryEnabled() {
   return cloudinaryConfigured;
 }
 
-/** PDFs and Word docs use `raw` on Cloudinary so browsers can open/download them reliably. */
+/**
+ * Cloudinary treats PDFs as `image` resources (pages/preview support).
+ * Word docs use `raw`. Do not force `format` on raw — it breaks delivery URLs.
+ */
 function cloudinaryResourceType(mimetype) {
-  if (DOCUMENT_MIME.has(mimetype)) return "raw";
+  if (mimetype === "application/pdf") return "image";
+  if (
+    mimetype === "application/msword" ||
+    mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ) {
+    return "raw";
+  }
   if (mimetype?.startsWith("image/")) return "image";
   return "auto";
 }
@@ -66,15 +68,14 @@ export async function uploadFile(file, { folder = "axiolink", req } = {}) {
     }
 
     const resourceType = cloudinaryResourceType(file.mimetype);
-    const ext = path.extname(file.originalname || "") || "";
 
     const result = await cloudinary.uploader.upload(file.path, {
       folder,
       resource_type: resourceType,
       type: "upload",
+      access_mode: "public",
       use_filename: true,
       unique_filename: true,
-      ...(resourceType === "raw" && ext ? { format: ext.replace(/^\./, "") } : {}),
     });
 
     try {
