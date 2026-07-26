@@ -36,7 +36,7 @@ const CourseCard = ({ course, index = 0 }) => {
         hover
         className="h-full flex flex-col overflow-hidden p-0 border border-neutral-200/80 shadow-sm"
       >
-        <div className="relative h-48 overflow-hidden bg-neutral-100">
+        <div className="relative h-54 rounded-2xl overflow-hidden bg-neutral-100">
           <img
             src={imageSrc}
             alt={course.title}

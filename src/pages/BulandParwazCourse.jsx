@@ -159,11 +159,12 @@ const BulandParwazCourse = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-5xl"
           >
-            <div className="rounded-2xl overflow-hidden shadow-lg mb-8 max-h-72">
+            <div className="rounded-2xl overflow-hidden shadow-lg mb-8 aspect-video">
               <img
                 src={course.image}
                 alt={course.title}
-                className="w-full h-72 object-cover"
+                className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
 
