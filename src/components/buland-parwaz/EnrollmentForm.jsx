@@ -117,12 +117,13 @@ const EnrollmentForm = ({ course }) => {
           required
         />
         <Input
-          label="Phone (optional)"
+          label="Phone"
           name="phone"
           type="tel"
-          placeholder={SITE_CONTACT.phone}
+          placeholder="0300-0000000"
           value={form.phone}
           onChange={handleChange}
+          required
         />
 
         <FileDropzone
