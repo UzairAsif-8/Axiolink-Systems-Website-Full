@@ -5,14 +5,43 @@ const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (hash) {
-      const id = hash.replace("#", "");
-      const timer = window.setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      }, 150);
-      return () => window.clearTimeout(timer);
+    // Disable browser's automatic scroll restoration
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
     }
-    window.scrollTo(0, 0);
+
+    if (hash) {
+      // Handle URLs like /about#team
+      const id = hash.substring(1);
+
+      const timer = setTimeout(() => {
+        const element = document.getElementById(id);
+
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        } else {
+          window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "auto",
+          });
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+
+    // Scroll to top on every page change
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
+    });
   }, [pathname, hash]);
 
   return null;
