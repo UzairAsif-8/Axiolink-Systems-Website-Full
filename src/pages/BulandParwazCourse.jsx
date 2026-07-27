@@ -662,7 +662,61 @@ const BulandParwazCourse = () => {
 
 
 
+{/* Payment Details */}
+<div className="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+  <h4 className="text-base font-semibold text-neutral-900 mb-4">
+    Payment Details
+  </h4>
 
+  <div className="space-y-4">
+    <div>
+      <p className="text-xs uppercase tracking-wide text-neutral-500">
+        Payment Method
+      </p>
+      <p className="text-lg font-semibold text-primary-600">
+        Easypaisa
+      </p>
+    </div>
+
+    <div>
+      <p className="text-xs uppercase tracking-wide text-neutral-500">
+        Account Title
+      </p>
+      <p className="font-medium text-neutral-900">
+        Muhammad Uzair Asif
+      </p>
+    </div>
+
+    <div>
+      <p className="text-xs uppercase tracking-wide text-neutral-500">
+        Easypaisa Number
+      </p>
+
+      <div className="mt-2 flex items-center justify-between rounded-xl bg-white border border-neutral-200 px-4 py-3">
+        <span className="font-mono text-lg font-semibold tracking-wider text-neutral-900">
+          0370-5834161
+        </span>
+
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText("03705834161");
+            alert("Number copied!");
+          }}
+          className="text-sm font-medium text-primary-600 hover:text-primary-700"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+      <p className="text-sm text-amber-800">
+        After payment, upload your payment screenshot in the registration form
+        to verify your enrollment.
+      </p>
+    </div>
+  </div>
+</div>
 
 
                 <div className="
