@@ -24,6 +24,7 @@ const EnrollmentForm = ({ course }) => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const messageRef = useRef(null);
+  const isFreeCourse = Number(course?.price ?? 0) <= 0;
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -31,7 +32,7 @@ const EnrollmentForm = ({ course }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!paymentSlip) {
+    if (!isFreeCourse && !paymentSlip) {
       setPaymentError("Payment slip is required");
       return;
     }
@@ -46,7 +47,7 @@ const EnrollmentForm = ({ course }) => {
         ...form,
         courseSlug: course.id,
         courseTitle: course.title,
-        paymentSlip,
+        paymentSlip: isFreeCourse ? null : paymentSlip,
       });
       setSubmitted(true);
     } catch (err) {
@@ -79,9 +80,10 @@ const EnrollmentForm = ({ course }) => {
           </h3>
           <p className="text-neutral-600 leading-relaxed">
             Thank you, {form.name}! Your enrollment for{" "}
-            <span className="font-medium">{course.title}</span> and payment slip have
-            been received. You will receive a confirmation email once your payment is
-            verified by our team.
+            <span className="font-medium">{course.title}</span> has been received.
+            {isFreeCourse
+              ? " You will receive a confirmation email from our team soon."
+              : " You will receive a confirmation email once your payment is verified by our team."}
           </p>
         </Card>
       </motion.div>
@@ -94,7 +96,7 @@ const EnrollmentForm = ({ course }) => {
         Enroll in This Course
       </h3>
       <p className="text-neutral-600 mb-6">
-        Fill in your details and upload your payment slip to apply for{" "}
+        Fill in your details{!isFreeCourse ? " and upload your payment slip" : ""} to apply for{" "}
         <span className="font-medium text-neutral-900">{course.title}</span>.
       </p>
 
@@ -126,20 +128,22 @@ const EnrollmentForm = ({ course }) => {
           required
         />
 
-        <FileDropzone
-          label="Payment Slip"
-          required
-          accept={PAYMENT_ACCEPT}
-          value={paymentSlip}
-          onChange={(file, err) => {
-            setPaymentSlip(file);
-            setPaymentError(err || (file ? "" : "Payment slip is required"));
-          }}
-          error={paymentError}
-          emptyText="Upload your payment slip (required)"
-          emptyHint="PDF or image, max 5MB"
-          helperText="PDF or image (JPG, PNG), max 5MB · Required"
-        />
+        {!isFreeCourse && (
+          <FileDropzone
+            label="Payment Slip"
+            required
+            accept={PAYMENT_ACCEPT}
+            value={paymentSlip}
+            onChange={(file, err) => {
+              setPaymentSlip(file);
+              setPaymentError(err || (file ? "" : "Payment slip is required"));
+            }}
+            error={paymentError}
+            emptyText="Upload your payment slip (required)"
+            emptyHint="PDF or image, max 5MB"
+            helperText="PDF or image (JPG, PNG), max 5MB · Required"
+          />
+        )}
 
         {error && (
           <p ref={messageRef} role="alert" className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg border border-red-100">
@@ -152,7 +156,7 @@ const EnrollmentForm = ({ course }) => {
           size="lg"
           className="w-full"
           loading={loading}
-          disabled={loading || !paymentSlip}
+          disabled={loading || (!isFreeCourse && !paymentSlip)}
         >
           {!loading && <Send className="mr-2 w-5 h-5" />}
           Submit Enrollment

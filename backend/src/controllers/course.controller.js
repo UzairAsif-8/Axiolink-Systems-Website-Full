@@ -234,16 +234,23 @@ export const enrollPublic = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Enrollment is closed for this course");
   }
 
-  const uploaded = await uploadFile(req.file, { folder: "payment-slips", req });
+  const isFreeCourse = Number(course.price ?? 0) <= 0;
+  if (!isFreeCourse && !req.file) {
+    throw new ApiError(400, "Payment slip is required to complete enrollment");
+  }
+
+  const uploaded = req.file
+    ? await uploadFile(req.file, { folder: "payment-slips", req })
+    : null;
 
   const enrollmentData = {
     fullName: body.name,
     email: body.email,
     phone: body.phone,
     courseId: course.id,
-    paymentStatus: "PENDING",
-    paymentSlipUrl: uploaded.url,
-    paymentSlipPublicId: uploaded.publicId,
+    paymentStatus: isFreeCourse ? "WAIVED" : "PENDING",
+    paymentSlipUrl: uploaded?.url ?? null,
+    paymentSlipPublicId: uploaded?.publicId ?? null,
   };
 
   let enrollment;
@@ -259,7 +266,7 @@ export const enrollPublic = asyncHandler(async (req, res) => {
   await notifyAdmins({
     type: "enrollment",
     title: "New course enrollment",
-    message: `${body.name} enrolled in ${course.title} (payment slip uploaded)`,
+    message: `${body.name} enrolled in ${course.title}${isFreeCourse ? " (free course)" : " (payment slip uploaded)"}`,
     link: `/admin/students/${enrollment.id}`,
   });
 
@@ -267,8 +274,9 @@ export const enrollPublic = asyncHandler(async (req, res) => {
     res,
     {
       id: enrollment.id,
-      message:
-        "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
+      message: isFreeCourse
+        ? "Your response has been recorded. You will receive a confirmation email from our team soon."
+        : "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
     },
     201
   );

@@ -563,6 +563,7 @@ export function createPublicEnrollment({ name, email, phone, courseSlug, payment
   if (course.isCompleted || course.enrollmentOpen === false) {
     return { error: "Enrollment is closed for this course" };
   }
+  const isFreeCourse = Number(course.price ?? 0) <= 0;
 
   const item = {
     id: randomUUID(),
@@ -571,7 +572,7 @@ export function createPublicEnrollment({ name, email, phone, courseSlug, payment
     phone: phone || null,
     courseId: course.id,
     status: "NEW",
-    paymentStatus: "PENDING",
+    paymentStatus: isFreeCourse ? "WAIVED" : "PENDING",
     paymentSlipUrl,
     enrollmentDate: new Date().toISOString(),
     createdAt: new Date().toISOString(),

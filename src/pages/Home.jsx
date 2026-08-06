@@ -63,10 +63,10 @@ const Home = () => {
   ];
 
   const stats = [
-    { number: "500+", label: "Enterprise Clients" },
+    { number: "50+", label: "Enterprise Clients" },
     { number: "99.9%", label: "Uptime SLA" },
     { number: "24/7", label: "Expert Support" },
-    { number: "15+", label: "Years Experience" },
+    { number: "2+", label: "Years Experience" },
   ];
 
   return (

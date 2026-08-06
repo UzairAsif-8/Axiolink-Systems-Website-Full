@@ -311,16 +311,21 @@ export const enrollPublic = asyncHandler(async (req, res) => {
     raw = req.body;
   }
 
-  if (!req.file) {
+  const slug = raw.courseSlug || raw.course_id;
+  const course = demo.getPublicCourseBySlug(slug);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  const isFreeCourse = Number(course.price ?? 0) <= 0;
+  if (!isFreeCourse && !req.file) {
     throw new ApiError(400, "Payment slip is required to complete enrollment");
   }
 
-  const paymentSlipUrl = getLocalFileUrl(path.basename(req.file.path), req);
+  const paymentSlipUrl = req.file ? getLocalFileUrl(path.basename(req.file.path), req) : null;
   const result = demo.createPublicEnrollment({
     name: raw.name,
     email: raw.email,
     phone: raw.phone,
-    courseSlug: raw.courseSlug || raw.course_id,
+    courseSlug: slug,
     paymentSlipUrl,
   });
 
@@ -330,8 +335,9 @@ export const enrollPublic = asyncHandler(async (req, res) => {
     res,
     {
       id: result.enrollment.id,
-      message:
-        "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
+      message: isFreeCourse
+        ? "Your response has been recorded. You will receive a confirmation email from our team soon."
+        : "Your response has been recorded. You will receive a confirmation email once your payment is verified.",
     },
     201
   );

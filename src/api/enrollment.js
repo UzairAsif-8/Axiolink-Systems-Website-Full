@@ -13,7 +13,9 @@ export async function submitEnrollment({ name, email, phone, courseSlug, courseT
       course_title: courseTitle,
     })
   );
-  formData.append("file", paymentSlip);
+  if (paymentSlip) {
+    formData.append("file", paymentSlip);
+  }
 
   const response = await fetch(apiUrl("courses/enroll"), {
     method: "POST",
