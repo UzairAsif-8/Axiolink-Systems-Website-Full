@@ -218,10 +218,6 @@ export const enrollPublic = asyncHandler(async (req, res) => {
   const body = validate(enrollmentSchema, raw);
   const slug = body.courseSlug || body.course_id;
 
-  if (!req.file) {
-    throw new ApiError(400, "Payment slip is required to complete enrollment");
-  }
-
   let course = null;
   if (body.courseId) {
     course = await prisma.course.findFirst({ where: { id: body.courseId, deletedAt: null } });
